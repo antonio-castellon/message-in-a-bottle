@@ -15,12 +15,15 @@
       --amber: #e9c46a;
       --sand: #d4a373;
       --paper: #f4efe6;
+      --ink: #1b242c;
       --text: #e8eef4;
       --muted: #8aa0b5;
+      --danger: #e76f51;
     }
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #111; font-family: -apple-system, Segoe UI, sans-serif; }
-    .row { display: flex; gap: 28px; padding: 28px; }
+    .phones { display: flex; gap: 28px; padding: 28px 28px 0; }
+    .phones.last { padding-bottom: 28px; padding-top: 28px; }
     .phone {
       width: 390px;
       height: 844px;
@@ -32,9 +35,11 @@
       display: flex;
       flex-direction: column;
       box-shadow: 0 20px 60px rgba(0,0,0,.45);
+      flex-shrink: 0;
     }
     .status { height: 48px; padding: 16px 20px 0; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; }
     .header { padding: 8px 20px 12px; font-size: 22px; font-weight: 700; color: var(--paper); }
+    .back { color: var(--sand); font-size: 14px; font-weight: 600; }
     .body { flex: 1; overflow: hidden; padding: 0 16px 12px; display: flex; flex-direction: column; gap: 12px; }
     .banner {
       display: flex; gap: 10px; align-items: center;
@@ -70,23 +75,48 @@
     .tabs .on { color: var(--amber); font-weight: 700; }
     .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; }
     .ico { font-size: 18px; }
-    label.lbl { color: var(--sand); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; font-size: 12px; }
+    .lbl { color: var(--sand); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; font-size: 12px; }
     .input {
-      min-height: 120px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+      min-height: 88px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
       padding: 16px; color: var(--paper); font-size: 17px; line-height: 24px;
     }
+    .field {
+      background: var(--card); border: 1px solid var(--line); border-radius: 12px;
+      padding: 10px 12px; color: var(--muted); font-size: 14px;
+    }
     .cta { background: var(--accent); color: var(--bg); font-weight: 800; font-size: 16px; border-radius: 14px; padding: 14px; text-align: center; }
+    .ghost {
+      border-radius: 10px; padding: 8px 12px; border: 1px solid var(--sand); color: var(--sand);
+      font-weight: 700; font-size: 13px; display: inline-block;
+    }
     .section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
     .section h3 { color: var(--sand); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
     .hint { color: var(--muted); font-size: 13px; line-height: 18px; }
     .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--paper); margin: 6px 0; }
-    .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .hline { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
     .switch { width: 42px; height: 24px; border-radius: 12px; background: var(--accentDim); position: relative; flex-shrink: 0; }
     .switch:after { content: ""; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); position: absolute; right: 3px; top: 3px; }
+    .qr-wrap { background: var(--paper); padding: 18px; border-radius: 20px; align-self: center; }
+    .qr-wrap img { width: 220px; height: 220px; display: block; }
+    .center { text-align: center; }
+    .camera {
+      flex: 1; border-radius: 20px; border: 1px solid var(--line); overflow: hidden;
+      background: radial-gradient(circle at 50% 40%, #1b3344, #071018 70%);
+      position: relative; min-height: 360px;
+    }
+    .finder {
+      position: absolute; left: 50%; top: 42%; width: 180px; height: 180px;
+      margin: -90px 0 0 -90px; border: 2px solid var(--accent); border-radius: 16px;
+    }
+    .finder:before {
+      content: ""; position: absolute; inset: 18px; background: url("images/sample-uuid-qr.png") center/contain no-repeat;
+      opacity: .85; border-radius: 8px;
+    }
+    .danger { border: 1px solid var(--danger); color: var(--danger); border-radius: 8px; padding: 6px 10px; font-size: 12px; font-weight: 700; }
   </style>
 </head>
 <body>
-  <div class="row">
+  <div class="phones">
     <div class="phone" id="inbox">
       <div class="status"><span>9:41</span><span>MIAB</span></div>
       <div class="header">Inbox</div>
@@ -94,7 +124,7 @@
         <div class="banner"><div class="dot"></div><div><b>On air · GATT</b><span>2 nearby · queue 1 · every 8s</span></div></div>
         <p class="lead">Messages that arrived phone to phone. Direct ones stay here. Bottles also enter the forwarding pool unless you silence them.</p>
         <div class="chips">
-          <span class="chip on">All</span><span class="chip">Sports</span><span class="chip">Politics</span><span class="chip">Philosophy</span><span class="chip">Lifestyle</span>
+          <span class="chip on">All</span><span class="chip">Sports</span><span class="chip">Politics</span><span class="chip">Philosophy</span>
         </div>
         <div class="card">
           <div class="meta"><span>Philosophy</span><span class="time">just now</span></div>
@@ -149,8 +179,8 @@
         <div class="lbl">Topic</div>
         <div class="chips"><span class="chip">Sports</span><span class="chip">Politics</span><span class="chip on">Philosophy</span><span class="chip">Lifestyle</span></div>
         <div class="lbl">Message language</div>
-        <div class="chips"><span class="chip on">English</span><span class="chip">Español</span><span class="chip">Français</span><span class="chip">Deutsch</span><span class="chip">Italiano</span></div>
-        <div class="card row">
+        <div class="chips"><span class="chip on">English</span><span class="chip">Español</span><span class="chip">Français</span><span class="chip">Deutsch</span></div>
+        <div class="card hline">
           <div><div class="lbl">Message in a bottle</div><div class="hint">When on, whoever receives it will rebroadcast it.</div></div>
           <div class="switch"></div>
         </div>
@@ -170,24 +200,29 @@
       <div class="body">
         <div class="banner"><div class="dot"></div><div><b>On air · GATT</b><span>2 nearby · queue 1 · every 8s</span></div></div>
         <div class="section">
-          <h3>App language</h3>
-          <p class="hint">Language of the interface. Incoming messages default to this language only.</p>
-          <p class="mono">English · en</p>
+          <h3>Identity</h3>
+          <p class="mono">3f8a1c2e-9b4d-4e71-a2c8-7d6e5f4a3b21</p>
+          <p class="hint">Origin UUID for this phone.</p>
+          <div class="chips" style="margin-top:8px">
+            <span class="ghost">Regenerate UUID</span>
+            <span class="ghost">Show my QR</span>
+          </div>
         </div>
         <div class="section">
-          <h3>Languages to receive</h3>
-          <p class="hint">By default only messages in the app language are accepted.</p>
-          <p class="mono">1 selected</p>
+          <h3>UUID whitelist</h3>
+          <p class="hint">1 phones allowed. When the whitelist is on, only those UUIDs may sync over GATT.</p>
+          <div style="margin-top:8px"><span class="ghost">Open whitelist</span></div>
+        </div>
+        <div class="section">
+          <h3>App language</h3>
+          <p class="hint">Language of the interface.</p>
+          <p class="mono">English · en</p>
         </div>
         <div class="section">
           <h3>Topics to receive</h3>
           <div class="chips" style="margin-top:8px">
-            <span class="chip on">Sports</span><span class="chip on">Politics</span><span class="chip on">Philosophy</span><span class="chip on">Science</span>
+            <span class="chip on">Sports</span><span class="chip on">Politics</span><span class="chip on">Philosophy</span>
           </div>
-        </div>
-        <div class="section">
-          <h3>GATT radio</h3>
-          <div class="row"><div><b>Transmit and listen</b><div class="hint">No internet.</div></div><div class="switch"></div></div>
         </div>
       </div>
       <div class="tabs">
@@ -195,6 +230,54 @@
         <div class="tab"><span class="ico">▣</span>Bottle</div>
         <div class="tab"><span class="ico">✎</span>Write</div>
         <div class="tab on"><span class="ico">⚙</span>Settings</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="phones last">
+    <div class="phone" id="whitelist">
+      <div class="status"><span>9:41</span><span class="back">‹ Settings</span></div>
+      <div class="header">UUID whitelist</div>
+      <div class="body">
+        <p class="lead">When the whitelist is on, this phone only talks to listed UUIDs. Share your QR so someone can add you, or scan theirs to add them.</p>
+        <div class="card hline">
+          <div><div style="font-weight:700">Require whitelist</div><div class="hint">Off: anyone nearby can send. On: only listed UUIDs.</div></div>
+          <div class="switch"></div>
+        </div>
+        <div class="chips">
+          <span class="ghost">Show my QR</span>
+          <span class="ghost">Scan a QR</span>
+        </div>
+        <div class="field">uuid…</div>
+        <div class="cta">Add UUID</div>
+        <div class="card hline">
+          <div>
+            <div class="mono">7c91d0ab-12ef-4b33-9c44-88aa0011bb22</div>
+            <div class="hint">7c91d0ab · QR</div>
+          </div>
+          <span class="danger">Remove</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="phone" id="share">
+      <div class="status"><span>9:41</span><span class="back">‹ Whitelist</span></div>
+      <div class="header">Share UUID</div>
+      <div class="body" style="align-items:center; padding-top: 8px;">
+        <p class="lead center">Let someone scan this code to put your phone UUID on their whitelist.</p>
+        <div class="qr-wrap">
+          <img src="images/sample-uuid-qr.png" alt="UUID QR code">
+        </div>
+        <p class="mono center">3f8a1c2e-9b4d-4e71-a2c8-7d6e5f4a3b21</p>
+      </div>
+    </div>
+
+    <div class="phone" id="scan">
+      <div class="status"><span>9:41</span><span class="back">‹ Whitelist</span></div>
+      <div class="header">Scan UUID</div>
+      <div class="body">
+        <p class="lead center">Point the camera at another phone’s Message in a Bottle QR.</p>
+        <div class="camera"><div class="finder"></div></div>
       </div>
     </div>
   </div>

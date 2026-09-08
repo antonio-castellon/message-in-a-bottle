@@ -13,13 +13,21 @@ Android and iPhone app for sending **text messages** between nearby phones over 
 ## Screens
 
 <p align="center">
-  <img src="docs/images/screen-inbox.png" width="200" alt="Inbox screen">
-  <img src="docs/images/screen-bottle.png" width="200" alt="Bottle pool screen">
-  <img src="docs/images/screen-write.png" width="200" alt="Write screen">
-  <img src="docs/images/screen-settings.png" width="200" alt="Settings screen">
+  <img src="docs/images/screen-inbox.png" width="180" alt="Inbox">
+  <img src="docs/images/screen-bottle.png" width="180" alt="Bottle">
+  <img src="docs/images/screen-write.png" width="180" alt="Write">
+  <img src="docs/images/screen-settings.png" width="180" alt="Settings">
 </p>
 
-Inbox · Bottle · Write · Settings
+<p align="center">Inbox · Bottle · Write · Settings</p>
+
+<p align="center">
+  <img src="docs/images/screen-whitelist.png" width="180" alt="UUID whitelist">
+  <img src="docs/images/screen-share.png" width="180" alt="Share UUID QR">
+  <img src="docs/images/screen-scan.png" width="180" alt="Scan UUID QR">
+</p>
+
+<p align="center">Whitelist · Share QR · Scan QR</p>
 
 ## How a message travels
 
