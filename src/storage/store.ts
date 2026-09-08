@@ -44,6 +44,7 @@ export function defaultSettings(): Settings {
     acceptedLanguages: [ui],
     acceptedCategories: [...CATEGORIES],
     whitelistEnabled: false,
+    shareName: '',
   };
 }
 
@@ -76,6 +77,7 @@ export async function loadState(): Promise<PersistedState> {
         acceptedCategories:
           settings.acceptedCategories?.length > 0 ? settings.acceptedCategories : [...CATEGORIES],
         whitelistEnabled: settings.whitelistEnabled ?? false,
+        shareName: settings.shareName ?? '',
       }
     : base;
   const fallbackLang = merged.uiLanguage;
@@ -87,7 +89,11 @@ export async function loadState(): Promise<PersistedState> {
     settings: merged,
     messages: migrated,
     blocked,
-    whitelist,
+    whitelist: whitelist.map((e) => ({
+      uuid: e.uuid,
+      label: (e.label || (e as { note?: string }).note || e.uuid.slice(0, 8)).trim(),
+      addedAt: e.addedAt,
+    })),
     log: log.slice(-80),
   };
 }

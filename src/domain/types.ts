@@ -68,6 +68,8 @@ export interface Settings {
   acceptedCategories: Category[];
   /** When true, only phones on the UUID whitelist may sync. */
   whitelistEnabled: boolean;
+  /** Optional name encoded in this phone's share QR. */
+  shareName: string;
 }
 
 export interface BlockedEntry {
@@ -79,8 +81,9 @@ export interface BlockedEntry {
 
 export interface WhitelistEntry {
   uuid: string;
+  /** User-facing name so the UUID is recognizable. */
+  label: string;
   addedAt: string;
-  note?: string;
 }
 
 export type RadioStatus =

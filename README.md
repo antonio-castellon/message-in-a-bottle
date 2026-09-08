@@ -61,9 +61,9 @@ Both filters are in Settings. The same filters are sent in the GATT handshake so
 
 By default the radio is open to any nearby phone (except the block list). You can turn on a **UUID whitelist** so this phone only syncs with listed origins.
 
-- **Show my QR** — encodes this phone’s UUID (`miab:1:device:<uuid>`).
-- **Scan a QR** — the other person scans it and their app adds you to **their** whitelist (or you scan theirs to add them to yours).
-- You can also paste a UUID by hand.
+- **Show my QR** — encodes this phone’s UUID (`miab:1:device:<uuid>`), optionally with a display name.
+- **Scan a QR** — the other person scans it, **gives it a name**, and adds you to **their** whitelist (or you scan theirs).
+- You can also paste a UUID by hand; a **name is required** so each entry is recognizable (and can be renamed later).
 
 The block list still wins: a blocked UUID is never contacted, even if it is on the whitelist.
 

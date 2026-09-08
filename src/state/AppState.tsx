@@ -62,7 +62,8 @@ interface AppContextValue {
   markSeen: (messageId: string) => Promise<void>;
   blockUuid: (uuid: string, kind: BlockedEntry['kind'], note?: string) => Promise<void>;
   unblockUuid: (uuid: string) => Promise<void>;
-  addToWhitelist: (uuid: string, note?: string) => Promise<void>;
+  addToWhitelist: (uuid: string, label: string) => Promise<void>;
+  renameWhitelist: (uuid: string, label: string) => Promise<void>;
   removeFromWhitelist: (uuid: string) => Promise<void>;
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
   regenerateDeviceId: () => Promise<string>;
@@ -277,13 +278,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await saveBlocked(next);
   }, []);
 
-  const addToWhitelist = useCallback(async (uuid: string, note?: string) => {
+  const addToWhitelist = useCallback(async (uuid: string, label: string) => {
     const id = uuid.trim().toLowerCase();
-    if (!id) return;
+    const name = label.replace(/\s+/g, ' ').trim().slice(0, 40);
+    if (!id || !name) return;
     const next = [
-      { uuid: id, addedAt: nowIso(), note },
+      { uuid: id, label: name, addedAt: nowIso() },
       ...whitelistRef.current.filter((e) => e.uuid.toLowerCase() !== id),
     ];
+    whitelistRef.current = next;
+    setWhitelist(next);
+    await saveWhitelist(next);
+  }, []);
+
+  const renameWhitelist = useCallback(async (uuid: string, label: string) => {
+    const name = label.replace(/\s+/g, ' ').trim().slice(0, 40);
+    if (!name) return;
+    const next = whitelistRef.current.map((e) =>
+      e.uuid.toLowerCase() === uuid.toLowerCase() ? { ...e, label: name } : e,
+    );
     whitelistRef.current = next;
     setWhitelist(next);
     await saveWhitelist(next);
@@ -378,6 +391,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       blockUuid,
       unblockUuid,
       addToWhitelist,
+      renameWhitelist,
       removeFromWhitelist,
       updateSettings,
       regenerateDeviceId,
@@ -406,6 +420,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     blockUuid,
     unblockUuid,
     addToWhitelist,
+    renameWhitelist,
     removeFromWhitelist,
     updateSettings,
     regenerateDeviceId,

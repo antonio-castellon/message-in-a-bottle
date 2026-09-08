@@ -22,14 +22,23 @@ export default function WhitelistScreen() {
     whitelist,
     updateSettings,
     addToWhitelist,
+    renameWhitelist,
     removeFromWhitelist,
     t,
   } = useApp();
   const router = useRouter();
   const [draft, setDraft] = useState('');
+  const [label, setLabel] = useState('');
+  const [editing, setEditing] = useState<string | null>(null);
+  const [editLabel, setEditLabel] = useState('');
 
   function add() {
     const value = draft.trim().toLowerCase();
+    const name = label.replace(/\s+/g, ' ').trim();
+    if (!name) {
+      Alert.alert(t('whitelist.labelRequired'));
+      return;
+    }
     if (!isUuid(value)) {
       Alert.alert(t('blocked.invalidTitle'), t('blocked.invalidBody'));
       return;
@@ -38,8 +47,9 @@ export default function WhitelistScreen() {
       Alert.alert(t('whitelist.self'));
       return;
     }
-    void addToWhitelist(value, 'manual');
+    void addToWhitelist(value, name);
     setDraft('');
+    setLabel('');
   }
 
   return (
@@ -68,6 +78,15 @@ export default function WhitelistScreen() {
         </Pressable>
       </View>
 
+      <Text style={styles.fieldLabel}>{t('whitelist.label')}</Text>
+      <TextInput
+        value={label}
+        onChangeText={(v) => setLabel(v.slice(0, 40))}
+        placeholder={t('whitelist.labelPlaceholder')}
+        placeholderTextColor={colors.muted}
+        style={styles.input}
+      />
+      <Text style={styles.fieldLabel}>UUID</Text>
       <TextInput
         value={draft}
         onChangeText={setDraft}
@@ -86,14 +105,42 @@ export default function WhitelistScreen() {
       ) : (
         whitelist.map((entry) => (
           <View key={entry.uuid} style={styles.card}>
-            <View style={{ flex: 1 }}>
-              <Text selectable style={styles.uuid}>
-                {entry.uuid}
-              </Text>
-              <Text style={styles.meta}>
-                {shortId(entry.uuid)} · {new Date(entry.addedAt).toLocaleString()}
-              </Text>
-            </View>
+            {editing === entry.uuid ? (
+              <View style={{ flex: 1, gap: 8 }}>
+                <TextInput
+                  value={editLabel}
+                  onChangeText={(v) => setEditLabel(v.slice(0, 40))}
+                  style={styles.input}
+                  autoFocus
+                />
+                <Pressable
+                  onPress={() => {
+                    void renameWhitelist(entry.uuid, editLabel);
+                    setEditing(null);
+                  }}
+                  style={styles.secondary}>
+                  <Text style={styles.secondaryText}>{t('whitelist.saveLabel')}</Text>
+                </Pressable>
+              </View>
+            ) : (
+              <View style={{ flex: 1 }}>
+                <Text style={styles.label}>{entry.label}</Text>
+                <Text selectable style={styles.uuid}>
+                  {entry.uuid}
+                </Text>
+                <Text style={styles.meta}>
+                  {shortId(entry.uuid)} · {new Date(entry.addedAt).toLocaleString()}
+                </Text>
+                <Pressable
+                  onPress={() => {
+                    setEditing(entry.uuid);
+                    setEditLabel(entry.label);
+                  }}
+                  style={styles.rename}>
+                  <Text style={styles.renameText}>{t('whitelist.rename')}</Text>
+                </Pressable>
+              </View>
+            )}
             <Pressable onPress={() => void removeFromWhitelist(entry.uuid)} style={styles.remove}>
               <Text style={styles.removeText}>{t('blocked.remove')}</Text>
             </Pressable>
@@ -109,10 +156,12 @@ const styles = StyleSheet.create({
   content: { padding: space.md, paddingBottom: 48, gap: 12 },
   lead: { color: colors.muted, fontSize: 14, lineHeight: 20 },
   hint: { color: colors.muted, fontSize: 13, lineHeight: 18, marginTop: 4 },
+  fieldLabel: { color: colors.sand, fontWeight: '700', fontSize: 12, letterSpacing: 0.6, textTransform: 'uppercase' },
   row: { flexDirection: 'row', gap: 12, alignItems: 'center' },
   rowTitle: { color: colors.text, fontWeight: '700' },
   actions: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },
   secondary: {
+    alignSelf: 'flex-start',
     borderRadius: 10,
     paddingHorizontal: 12,
     paddingVertical: 8,
@@ -141,15 +190,18 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: 'row',
     gap: 12,
-    alignItems: 'center',
+    alignItems: 'flex-start',
     backgroundColor: colors.card,
     borderRadius: 14,
     padding: space.md,
     borderWidth: 1,
     borderColor: colors.line,
   },
-  uuid: { color: colors.paper, fontSize: 12 },
+  label: { color: colors.paper, fontSize: 16, fontWeight: '700' },
+  uuid: { color: colors.muted, fontSize: 12, marginTop: 4 },
   meta: { color: colors.muted, fontSize: 11, marginTop: 4 },
+  rename: { marginTop: 8, alignSelf: 'flex-start' },
+  renameText: { color: colors.sand, fontWeight: '700', fontSize: 13 },
   remove: {
     paddingHorizontal: 10,
     paddingVertical: 6,
