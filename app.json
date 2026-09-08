@@ -1,23 +1,38 @@
 {
   "expo": {
-    "name": "message-in-a-bottle",
+    "name": "Message in a Bottle",
     "slug": "message-in-a-bottle",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "messageinabottle",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "dark",
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "dev.personal.messageinabottle",
+      "infoPlist": {
+        "NSBluetoothAlwaysUsageDescription": "Message in a Bottle usa Bluetooth GATT para intercambiar mensajes de texto con móviles cercanos, sin internet.",
+        "NSBluetoothPeripheralUsageDescription": "Message in a Bottle se anuncia como periférico BLE para que otros móviles recojan y dejen mensajes."
+      }
     },
     "android": {
+      "package": "dev.personal.messageinabottle",
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
+        "backgroundColor": "#071018",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.BLUETOOTH",
+        "android.permission.BLUETOOTH_ADMIN",
+        "android.permission.BLUETOOTH_SCAN",
+        "android.permission.BLUETOOTH_CONNECT",
+        "android.permission.BLUETOOTH_ADVERTISE",
+        "android.permission.ACCESS_FINE_LOCATION",
+        "android.permission.ACCESS_COARSE_LOCATION"
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -31,7 +46,19 @@
         {
           "image": "./assets/images/splash-icon.png",
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff"
+          "backgroundColor": "#071018"
+        }
+      ],
+      "expo-dev-client",
+      "./plugins/withWindowsCmake",
+      [
+        "munim-bluetooth",
+        {
+          "androidBluetoothPermissions": ["scan", "connect", "advertise"],
+          "bluetoothBackground": true,
+          "multipeerServiceTypes": false,
+          "bluetoothAlwaysUsageDescription": "Message in a Bottle usa Bluetooth GATT para intercambiar mensajes de texto con móviles cercanos, sin internet.",
+          "bluetoothPeripheralUsageDescription": "Message in a Bottle se anuncia como periférico BLE para que otros móviles recojan y dejen mensajes."
         }
       ]
     ],

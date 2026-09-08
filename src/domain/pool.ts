@@ -1,0 +1,96 @@
+import { isExpired, parseWireMessage, wireMessage } from './ids';
+import type {
+  BlockedEntry,
+  BottleMessage,
+  LocalMessage,
+  Settings,
+} from './types';
+
+export function isDeviceBlocked(blocked: BlockedEntry[], deviceId: string): boolean {
+  const id = deviceId.toLowerCase();
+  return blocked.some((b) => b.kind === 'device' && b.uuid.toLowerCase() === id);
+}
+
+export function isMessageBlocked(blocked: BlockedEntry[], messageId: string): boolean {
+  const id = messageId.toLowerCase();
+  return blocked.some((b) => b.kind === 'message' && b.uuid.toLowerCase() === id);
+}
+
+export function catalogIds(messages: LocalMessage[]): string[] {
+  return messages.map((m) => m.messageId);
+}
+
+export function broadcastable(
+  messages: LocalMessage[],
+  settings: Settings,
+  at = Date.now(),
+): BottleMessage[] {
+  return messages
+    .filter((m) => {
+      if (!m.inBroadcastPool) return false;
+      if (isExpired(m.expiresAt, at)) return false;
+      if (m.owned) return true;
+      if (!settings.acceptBottleMode) return false;
+      if (!m.bottleMode) return false;
+      if (!m.bottleForwardEnabled) return false;
+      if (m.hopCount >= settings.maxHops) return false;
+      return true;
+    })
+    .map(wireMessage);
+}
+
+export function ingestIncoming(
+  existing: LocalMessage[],
+  incoming: BottleMessage[],
+  settings: Settings,
+  blocked: BlockedEntry[],
+  fromDeviceId: string,
+): { next: LocalMessage[]; added: LocalMessage[] } {
+  const known = new Set(existing.map((m) => m.messageId.toLowerCase()));
+  const added: LocalMessage[] = [];
+  const now = Date.now();
+  const receivedAt = new Date(now).toISOString();
+
+  for (const raw of incoming) {
+    const msg = parseWireMessage(raw);
+    if (!msg) continue;
+    if (known.has(msg.messageId)) continue;
+    if (msg.originDeviceId === settings.deviceId) continue;
+    if (isDeviceBlocked(blocked, msg.originDeviceId) || isDeviceBlocked(blocked, fromDeviceId)) {
+      continue;
+    }
+    if (isMessageBlocked(blocked, msg.messageId)) continue;
+    if (isExpired(msg.expiresAt, now)) continue;
+    if (msg.hopCount >= settings.maxHops) continue;
+
+    const hopCount = msg.hopCount + 1;
+    const bottleIntoPool =
+      msg.bottleMode && settings.acceptBottleMode && hopCount < settings.maxHops;
+
+    const local: LocalMessage = {
+      ...msg,
+      hopCount,
+      owned: false,
+      receivedAt,
+      receivedFromDeviceId: fromDeviceId,
+      inBroadcastPool: bottleIntoPool,
+      bottleForwardEnabled: bottleIntoPool,
+      seen: false,
+    };
+    known.add(local.messageId);
+    added.push(local);
+  }
+
+  return { next: added.length ? [...added, ...existing] : existing, added };
+}
+
+export const MAX_MESSAGES_PER_SYNC = 16;
+export const MAX_CATALOG_IDS = 150;
+
+export function messagesPeerNeeds(
+  ours: BottleMessage[],
+  theirHave: string[],
+): BottleMessage[] {
+  const have = new Set(theirHave.map((id) => id.toLowerCase()));
+  return ours.filter((m) => !have.has(m.messageId.toLowerCase())).slice(0, MAX_MESSAGES_PER_SYNC);
+}
