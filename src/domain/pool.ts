@@ -2,6 +2,7 @@ import { isExpired, parseWireMessage, wireMessage } from './ids';
 import type {
   BlockedEntry,
   BottleMessage,
+  Category,
   LocalMessage,
   Settings,
 } from './types';
@@ -62,6 +63,9 @@ export function ingestIncoming(
     if (isMessageBlocked(blocked, msg.messageId)) continue;
     if (isExpired(msg.expiresAt, now)) continue;
     if (msg.hopCount >= settings.maxHops) continue;
+    if (!matchesReceiveFilter(msg, settings.acceptedLanguages, settings.acceptedCategories)) {
+      continue;
+    }
 
     const hopCount = msg.hopCount + 1;
     const bottleIntoPool =
@@ -82,6 +86,27 @@ export function ingestIncoming(
   }
 
   return { next: added.length ? [...added, ...existing] : existing, added };
+}
+
+export function matchesReceiveFilter(
+  msg: BottleMessage,
+  languages: string[] | undefined,
+  categories: string[] | undefined,
+): boolean {
+  if (languages && languages.length > 0 && !languages.includes(msg.language)) return false;
+  if (categories && categories.length > 0 && !categories.includes(msg.category)) return false;
+  return true;
+}
+
+export function filterForPeer(
+  messages: BottleMessage[],
+  languages?: string[],
+  categories?: string[],
+): BottleMessage[] {
+  if ((!languages || languages.length === 0) && (!categories || categories.length === 0)) {
+    return messages;
+  }
+  return messages.filter((m) => matchesReceiveFilter(m, languages, categories as Category[] | undefined));
 }
 
 export const MAX_MESSAGES_PER_SYNC = 16;

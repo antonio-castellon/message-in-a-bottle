@@ -15,14 +15,14 @@ import { useApp } from '@/src/state/AppState';
 import { colors, space } from '@/src/theme';
 
 export default function BlockedScreen() {
-  const { blocked, blockUuid, unblockUuid } = useApp();
+  const { blocked, blockUuid, unblockUuid, t } = useApp();
   const [draft, setDraft] = useState('');
   const [kind, setKind] = useState<'device' | 'message'>('device');
 
   function add() {
     const value = draft.trim().toLowerCase();
     if (!isUuid(value)) {
-      Alert.alert('Invalid UUID', 'Paste a v4 UUID for a phone or a message.');
+      Alert.alert(t('blocked.invalidTitle'), t('blocked.invalidBody'));
       return;
     }
     void blockUuid(value, kind, 'manual');
@@ -31,21 +31,18 @@ export default function BlockedScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.lead}>
-        A blocked phone UUID is not accepted and is never contacted over GATT. A blocked
-        message UUID is dropped even if it arrives from another origin.
-      </Text>
+      <Text style={styles.lead}>{t('blocked.lead')}</Text>
 
       <View style={styles.kinds}>
         <Pressable
           onPress={() => setKind('device')}
           style={[styles.kind, kind === 'device' && styles.kindOn]}>
-          <Text style={styles.kindText}>Origin phone</Text>
+          <Text style={styles.kindText}>{t('blocked.originPhone')}</Text>
         </Pressable>
         <Pressable
           onPress={() => setKind('message')}
           style={[styles.kind, kind === 'message' && styles.kindOn]}>
-          <Text style={styles.kindText}>Message</Text>
+          <Text style={styles.kindText}>{t('blocked.message')}</Text>
         </Pressable>
       </View>
 
@@ -59,16 +56,18 @@ export default function BlockedScreen() {
         style={styles.input}
       />
       <Pressable onPress={add} style={styles.cta}>
-        <Text style={styles.ctaText}>Add to the list</Text>
+        <Text style={styles.ctaText}>{t('blocked.add')}</Text>
       </Pressable>
 
       {blocked.length === 0 ? (
-        <Text style={styles.empty}>The list is empty.</Text>
+        <Text style={styles.empty}>{t('blocked.empty')}</Text>
       ) : (
         blocked.map((entry) => (
           <View key={entry.uuid} style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.kindBadge}>{entry.kind === 'device' ? 'phone' : 'message'}</Text>
+              <Text style={styles.kindBadge}>
+                {entry.kind === 'device' ? t('blocked.kindPhone') : t('blocked.kindMessage')}
+              </Text>
               <Text selectable style={styles.uuid}>
                 {entry.uuid}
               </Text>
@@ -77,7 +76,7 @@ export default function BlockedScreen() {
               </Text>
             </View>
             <Pressable onPress={() => void unblockUuid(entry.uuid)} style={styles.unblock}>
-              <Text style={styles.unblockText}>Remove</Text>
+              <Text style={styles.unblockText}>{t('blocked.remove')}</Text>
             </Pressable>
           </View>
         ))

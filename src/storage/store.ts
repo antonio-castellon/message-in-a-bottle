@@ -2,6 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { newUuid, nowIso } from '../domain/ids';
 import {
+  CATEGORIES,
   COOLDOWN_DEFAULT,
   INTERVAL_DEFAULT,
   MAX_HOPS_DEFAULT,
@@ -10,6 +11,7 @@ import {
   type RadioLogEntry,
   type Settings,
 } from '../domain/types';
+import { deviceLanguage, normalizeLanguage } from '../i18n';
 
 const KEYS = {
   settings: 'miab.settings.v1',
@@ -26,6 +28,7 @@ export interface PersistedState {
 }
 
 export function defaultSettings(): Settings {
+  const ui = deviceLanguage();
   return {
     deviceId: newUuid(),
     deviceIdCreatedAt: nowIso(),
@@ -34,6 +37,9 @@ export function defaultSettings(): Settings {
     maxHops: MAX_HOPS_DEFAULT,
     radioEnabled: true,
     acceptBottleMode: true,
+    uiLanguage: ui,
+    acceptedLanguages: [ui],
+    acceptedCategories: [...CATEGORIES],
   };
 }
 
@@ -54,9 +60,26 @@ export async function loadState(): Promise<PersistedState> {
     readJson<BlockedEntry[]>(KEYS.blocked, []),
     readJson<RadioLogEntry[]>(KEYS.log, []),
   ]);
+  const base = defaultSettings();
+  const merged: Settings = settings?.deviceId
+    ? {
+        ...base,
+        ...settings,
+        uiLanguage: settings.uiLanguage ?? base.uiLanguage,
+        acceptedLanguages:
+          settings.acceptedLanguages?.length > 0 ? settings.acceptedLanguages : [settings.uiLanguage ?? base.uiLanguage],
+        acceptedCategories:
+          settings.acceptedCategories?.length > 0 ? settings.acceptedCategories : [...CATEGORIES],
+      }
+    : base;
+  const fallbackLang = merged.uiLanguage;
+  const migrated = messages.map((m) => ({
+    ...m,
+    language: normalizeLanguage((m as LocalMessage).language) ?? fallbackLang,
+  }));
   return {
-    settings: settings?.deviceId ? { ...defaultSettings(), ...settings } : defaultSettings(),
-    messages,
+    settings: merged,
+    messages: migrated,
     blocked,
     log: log.slice(-80),
   };

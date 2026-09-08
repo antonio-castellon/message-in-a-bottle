@@ -15,26 +15,44 @@ import {
 
 import { CATEGORIES, MAX_TEXT_LENGTH, type Category } from '@/src/domain/types';
 import { categoryLabel } from '@/src/format';
+import { LANGUAGES, languageNative } from '@/src/i18n';
 import { useApp } from '@/src/state/AppState';
 import { colors, space } from '@/src/theme';
 
-const EXPIRY_PRESETS: { label: string; ms: number | null }[] = [
-  { label: 'No expiry', ms: null },
-  { label: '1 hour', ms: 60 * 60 * 1000 },
-  { label: '6 hours', ms: 6 * 60 * 60 * 1000 },
-  { label: '24 hours', ms: 24 * 60 * 60 * 1000 },
-  { label: '7 days', ms: 7 * 24 * 60 * 60 * 1000 },
-  { label: '30 days', ms: 30 * 24 * 60 * 60 * 1000 },
+const POPULAR = ['en', 'es', 'fr', 'de', 'it', 'pt', 'zh', 'ja', 'ar', 'ru', 'hi', 'id'];
+const EXPIRY_KEYS = [
+  { key: 'expiry.none' as const, ms: null },
+  { key: 'expiry.h1' as const, ms: 60 * 60 * 1000 },
+  { key: 'expiry.h6' as const, ms: 6 * 60 * 60 * 1000 },
+  { key: 'expiry.h24' as const, ms: 24 * 60 * 60 * 1000 },
+  { key: 'expiry.d7' as const, ms: 7 * 24 * 60 * 60 * 1000 },
+  { key: 'expiry.d30' as const, ms: 30 * 24 * 60 * 60 * 1000 },
 ];
 
 export default function ComposeScreen() {
-  const { compose } = useApp();
+  const { compose, t, settings } = useApp();
   const router = useRouter();
   const [text, setText] = useState('');
   const [category, setCategory] = useState<Category>('other');
+  const [language, setLanguage] = useState(settings.uiLanguage);
+  const [langQuery, setLangQuery] = useState('');
   const [bottleMode, setBottleMode] = useState(true);
   const [expiryMs, setExpiryMs] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
+
+  const langChoices = (() => {
+    const q = langQuery.trim().toLowerCase();
+    if (!q) {
+      const codes = new Set([language, settings.uiLanguage, ...POPULAR]);
+      return LANGUAGES.filter((l) => codes.has(l.code));
+    }
+    return LANGUAGES.filter(
+      (l) =>
+        l.code.includes(q) ||
+        l.name.toLowerCase().includes(q) ||
+        l.native.toLowerCase().includes(q),
+    ).slice(0, 24);
+  })();
 
   async function submit() {
     if (busy) return;
@@ -43,19 +61,18 @@ export default function ComposeScreen() {
       await compose({
         text,
         category,
+        language,
         bottleMode,
         expiresAt: expiryMs ? new Date(Date.now() + expiryMs).toISOString() : null,
       });
       setText('');
       Alert.alert(
-        bottleMode ? 'Bottle launched' : 'Direct message ready',
-        bottleMode
-          ? 'Whoever receives it will add it to their pool and keep transmitting it.'
-          : 'Only this phone will transmit it. Others will not forward it.',
+        bottleMode ? t('compose.alertBottleTitle') : t('compose.alertDirectTitle'),
+        bottleMode ? t('compose.alertBottleBody') : t('compose.alertDirectBody'),
       );
       router.push('/(tabs)/pool');
     } catch (error) {
-      Alert.alert('Could not create', error instanceof Error ? error.message : String(error));
+      Alert.alert(t('compose.couldNotCreate'), error instanceof Error ? error.message : String(error));
     } finally {
       setBusy(false);
     }
@@ -66,15 +83,12 @@ export default function ComposeScreen() {
       style={styles.screen}
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
-        <Text style={styles.lead}>
-          A text message, no server. Choose whether it travels only from this phone or becomes
-          a bottle and is passed from hand to hand.
-        </Text>
+        <Text style={styles.lead}>{t('compose.lead')}</Text>
 
         <TextInput
           value={text}
           onChangeText={(value) => setText(value.slice(0, MAX_TEXT_LENGTH))}
-          placeholder="Write the message…"
+          placeholder={t('compose.placeholder')}
           placeholderTextColor={colors.muted}
           multiline
           style={styles.input}
@@ -83,7 +97,7 @@ export default function ComposeScreen() {
           {text.trim().length}/{MAX_TEXT_LENGTH}
         </Text>
 
-        <Text style={styles.label}>Topic</Text>
+        <Text style={styles.label}>{t('compose.topic')}</Text>
         <View style={styles.chips}>
           {CATEGORIES.map((c) => (
             <Pressable
@@ -91,7 +105,32 @@ export default function ComposeScreen() {
               onPress={() => setCategory(c)}
               style={[styles.chip, category === c && styles.chipOn]}>
               <Text style={[styles.chipText, category === c && styles.chipTextOn]}>
-                {categoryLabel(c)}
+                {categoryLabel(c, settings.uiLanguage)}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
+
+        <Text style={styles.label}>{t('compose.language')}</Text>
+        <TextInput
+          value={langQuery}
+          onChangeText={setLangQuery}
+          placeholder={t('languages.search')}
+          placeholderTextColor={colors.muted}
+          autoCapitalize="none"
+          style={styles.langSearch}
+        />
+        <View style={styles.chips}>
+          {langChoices.map((l) => (
+            <Pressable
+              key={l.code}
+              onPress={() => {
+                setLanguage(l.code);
+                setLangQuery('');
+              }}
+              style={[styles.chip, language === l.code && styles.chipOn]}>
+              <Text style={[styles.chipText, language === l.code && styles.chipTextOn]}>
+                {languageNative(l.code)}
               </Text>
             </Pressable>
           ))}
@@ -99,11 +138,8 @@ export default function ComposeScreen() {
 
         <View style={styles.row}>
           <View style={{ flex: 1 }}>
-            <Text style={styles.label}>Message in a bottle</Text>
-            <Text style={styles.hint}>
-              When on, whoever receives it will rebroadcast it. When off, it is a direct
-              phone-to-phone send with no relay.
-            </Text>
+            <Text style={styles.label}>{t('compose.bottle')}</Text>
+            <Text style={styles.hint}>{t('compose.bottleHint')}</Text>
           </View>
           <Switch
             value={bottleMode}
@@ -113,14 +149,14 @@ export default function ComposeScreen() {
           />
         </View>
 
-        <Text style={styles.label}>Expiry</Text>
+        <Text style={styles.label}>{t('compose.expiry')}</Text>
         <View style={styles.chips}>
-          {EXPIRY_PRESETS.map((p) => (
+          {EXPIRY_KEYS.map((p) => (
             <Pressable
-              key={p.label}
+              key={p.key}
               onPress={() => setExpiryMs(p.ms)}
               style={[styles.chip, expiryMs === p.ms && styles.chipOn]}>
-              <Text style={[styles.chipText, expiryMs === p.ms && styles.chipTextOn]}>{p.label}</Text>
+              <Text style={[styles.chipText, expiryMs === p.ms && styles.chipTextOn]}>{t(p.key)}</Text>
             </Pressable>
           ))}
         </View>
@@ -129,7 +165,7 @@ export default function ComposeScreen() {
           onPress={submit}
           disabled={busy || !text.trim()}
           style={[styles.cta, (!text.trim() || busy) && styles.ctaOff]}>
-          <Text style={styles.ctaText}>{bottleMode ? 'Launch bottle' : 'Leave a direct message'}</Text>
+          <Text style={styles.ctaText}>{bottleMode ? t('compose.launch') : t('compose.direct')}</Text>
         </Pressable>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -153,6 +189,15 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
   },
   counter: { color: colors.muted, alignSelf: 'flex-end', fontSize: 12 },
+  langSearch: {
+    backgroundColor: colors.card,
+    color: colors.paper,
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
   label: { color: colors.sand, fontWeight: '700', letterSpacing: 0.6, textTransform: 'uppercase', fontSize: 12 },
   hint: { color: colors.muted, fontSize: 13, lineHeight: 18, marginTop: 4 },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: 8 },

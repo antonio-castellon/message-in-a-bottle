@@ -3,27 +3,33 @@ import { StyleSheet, Text, View } from 'react-native';
 import { useApp } from '../state/AppState';
 import { colors, space } from '../theme';
 
-const STATUS_LABEL: Record<string, string> = {
-  off: 'Radio off',
-  starting: 'Starting GATT…',
-  on: 'On air · GATT',
-  syncing: 'Syncing…',
-  error: 'Radio error',
-  unsupported: 'Bluetooth unavailable',
-};
+const STATUS_KEY = {
+  off: 'radio.off',
+  starting: 'radio.starting',
+  on: 'radio.on',
+  syncing: 'radio.syncing',
+  error: 'radio.error',
+  unsupported: 'radio.unsupported',
+} as const;
 
 export function RadioBanner() {
-  const { status, statusDetail, peers, queueSize, syncingWith, settings } = useApp();
+  const { status, statusDetail, peers, queueSize, syncingWith, settings, t } = useApp();
   const nearby = peers.length;
+  const title =
+    status in STATUS_KEY ? t(STATUS_KEY[status as keyof typeof STATUS_KEY]) : status;
   return (
     <View style={styles.wrap}>
       <View style={[styles.dot, status === 'on' || status === 'syncing' ? styles.dotOn : styles.dotOff]} />
       <View style={{ flex: 1 }}>
-        <Text style={styles.title}>{STATUS_LABEL[status] ?? status}</Text>
+        <Text style={styles.title}>{title}</Text>
         <Text style={styles.sub}>
           {statusDetail
             ? statusDetail
-            : `${nearby} nearby · queue ${queueSize} · every ${settings.intervalSeconds}s`}
+            : t('radio.sub', {
+                nearby,
+                queue: queueSize,
+                seconds: settings.intervalSeconds,
+              })}
           {syncingWith ? ` · ${syncingWith.slice(0, 6)}…` : ''}
         </Text>
       </View>

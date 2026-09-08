@@ -54,13 +54,18 @@
       [
         "munim-bluetooth",
         {
-          "androidBluetoothPermissions": ["scan", "connect", "advertise"],
+          "androidBluetoothPermissions": [
+            "scan",
+            "connect",
+            "advertise"
+          ],
           "bluetoothBackground": true,
           "multipeerServiceTypes": false,
           "bluetoothAlwaysUsageDescription": "Message in a Bottle uses Bluetooth GATT to exchange text messages with nearby phones, with no internet.",
           "bluetoothPeripheralUsageDescription": "Message in a Bottle advertises as a BLE peripheral so nearby phones can pick up and leave messages."
         }
-      ]
+      ],
+      "expo-localization"
     ],
     "experiments": {
       "typedRoutes": true

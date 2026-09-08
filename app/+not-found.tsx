@@ -1,16 +1,18 @@
 import { Link, Stack } from 'expo-router';
 import { StyleSheet, Text, View } from 'react-native';
 
+import { useApp } from '@/src/state/AppState';
 import { colors, space } from '@/src/theme';
 
 export default function NotFoundScreen() {
+  const { t } = useApp();
   return (
     <>
-      <Stack.Screen options={{ title: 'Adrift' }} />
+      <Stack.Screen options={{ title: t('notFound.title') }} />
       <View style={styles.container}>
-        <Text style={styles.title}>This shore does not exist.</Text>
+        <Text style={styles.title}>{t('notFound.body')}</Text>
         <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Back to Inbox</Text>
+          <Text style={styles.linkText}>{t('notFound.back')}</Text>
         </Link>
       </View>
     </>

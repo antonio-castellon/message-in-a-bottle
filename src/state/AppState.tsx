@@ -11,6 +11,7 @@ import React, {
 import { radio } from '../ble/radio';
 import { isExpired, newUuid, nowIso, sanitizeText } from '../domain/ids';
 import { broadcastable, ingestIncoming, MAX_CATALOG_IDS } from '../domain/pool';
+import { translate, type TxKey } from '../i18n';
 import type {
   BlockedEntry,
   BottleMessage,
@@ -33,6 +34,7 @@ import {
 interface ComposeInput {
   text: string;
   category: Category;
+  language: string;
   bottleMode: boolean;
   expiresAt: string | null;
 }
@@ -60,6 +62,7 @@ interface AppContextValue {
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
   regenerateDeviceId: () => Promise<string>;
   toggleRadio: (on: boolean) => Promise<void>;
+  t: (key: TxKey, vars?: Record<string, string | number>) => string;
 }
 
 const AppContext = createContext<AppContextValue | null>(null);
@@ -115,6 +118,10 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       getSettings: () => settingsRef.current!,
       getBlocked: () => blockedRef.current,
       catalogIds: () => messagesRef.current.slice(0, MAX_CATALOG_IDS).map((m) => m.messageId),
+      getReceiveFilter: () => ({
+        languages: settingsRef.current!.acceptedLanguages,
+        categories: settingsRef.current!.acceptedCategories,
+      }),
       offerFor: (have) => {
         const live = broadcastable(messagesRef.current, settingsRef.current!);
         const skip = new Set(have.map((id) => id.toLowerCase()));
@@ -168,6 +175,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         originDeviceId: current.deviceId,
         text: sanitizeText(input.text, MAX_TEXT_LENGTH),
         category: input.category,
+        language: input.language,
         bottleMode: input.bottleMode,
         createdAt: nowIso(),
         expiresAt: input.expiresAt,
@@ -179,7 +187,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         bottleForwardEnabled: input.bottleMode,
         seen: true,
       };
-      if (!msg.text) throw new Error('The message is empty.');
+      if (!msg.text) throw new Error(translate(current.uiLanguage, 'error.emptyMessage'));
       await persistMessages([msg, ...messagesRef.current]);
       return msg;
     },
@@ -258,7 +266,16 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const updateSettings = useCallback(async (patch: Partial<Settings>) => {
-    const next = { ...settingsRef.current!, ...patch };
+    const prev = settingsRef.current!;
+    let nextPatch = patch;
+    if (patch.uiLanguage && patch.acceptedLanguages === undefined) {
+      if (prev.acceptedLanguages.length === 1 && prev.acceptedLanguages[0] === prev.uiLanguage) {
+        nextPatch = { ...patch, acceptedLanguages: [patch.uiLanguage] };
+      } else if (!prev.acceptedLanguages.includes(patch.uiLanguage)) {
+        nextPatch = { ...patch, acceptedLanguages: [...prev.acceptedLanguages, patch.uiLanguage] };
+      }
+    }
+    const next = { ...prev, ...nextPatch };
     settingsRef.current = next;
     setSettings(next);
     await saveSettings(next);
@@ -300,6 +317,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [messages],
   );
 
+  const t = useCallback(
+    (key: TxKey, vars?: Record<string, string | number>) =>
+      translate(settings?.uiLanguage ?? 'en', key, vars),
+    [settings?.uiLanguage],
+  );
+
   const value = useMemo<AppContextValue | null>(() => {
     if (!settings) return null;
     return {
@@ -325,6 +348,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       updateSettings,
       regenerateDeviceId,
       toggleRadio,
+      t,
     };
   }, [
     ready,
@@ -349,6 +373,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     updateSettings,
     regenerateDeviceId,
     toggleRadio,
+    t,
   ]);
 
   if (!value) return null;

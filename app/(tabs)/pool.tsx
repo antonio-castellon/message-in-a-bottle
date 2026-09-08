@@ -8,7 +8,7 @@ import { MessageCard } from '@/src/ui/MessageCard';
 import { RadioBanner } from '@/src/ui/RadioBanner';
 
 export default function PoolScreen() {
-  const { pool } = useApp();
+  const { pool, t } = useApp();
   const router = useRouter();
   const own = pool.filter((m) => m.owned).length;
   const bottled = pool.filter((m) => !m.owned).length;
@@ -22,17 +22,13 @@ export default function PoolScreen() {
         ListHeaderComponent={
           <View style={styles.header}>
             <RadioBanner />
-            <Text style={styles.lead}>
-              What this phone is willing to transmit. {own} yours · {bottled} bottled from
-              others. A direct message is not forwarded; a bottle is, until it expires or you
-              pull it from the pool.
-            </Text>
+            <Text style={styles.lead}>{t('bottle.lead', { own, bottled })}</Text>
           </View>
         }
         ListEmptyComponent={
           <EmptyState
-            title="The bottle is empty"
-            body="Write a message, or wait for someone to toss you a bottle to forward."
+            title={t('bottle.emptyTitle')}
+            body={t('bottle.emptyBody')}
           />
         }
         renderItem={({ item }) => (

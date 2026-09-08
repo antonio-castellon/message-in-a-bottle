@@ -1,5 +1,6 @@
 import * as Crypto from 'expo-crypto';
 
+import { isLanguageCode, normalizeLanguage } from '../i18n/languages';
 import { CATEGORIES, type BottleMessage, type Category } from './types';
 
 export function newUuid(): string {
@@ -39,6 +40,7 @@ export function wireMessage(msg: BottleMessage): BottleMessage {
     originDeviceId: msg.originDeviceId,
     text: msg.text,
     category: msg.category,
+    language: msg.language,
     bottleMode: msg.bottleMode,
     createdAt: msg.createdAt,
     expiresAt: msg.expiresAt,
@@ -54,6 +56,9 @@ export function parseWireMessage(raw: unknown): BottleMessage | null {
   const text = sanitizeText(o.text);
   if (!text) return null;
   if (!isCategory(o.category)) return null;
+  const language =
+    typeof o.language === 'string' ? normalizeLanguage(o.language) : null;
+  if (!language || !isLanguageCode(language)) return null;
   if (typeof o.bottleMode !== 'boolean') return null;
   if (typeof o.createdAt !== 'string' || !Number.isFinite(Date.parse(o.createdAt))) {
     return null;
@@ -70,6 +75,7 @@ export function parseWireMessage(raw: unknown): BottleMessage | null {
     originDeviceId: o.originDeviceId.toLowerCase(),
     text,
     category: o.category,
+    language,
     bottleMode: o.bottleMode,
     createdAt: o.createdAt,
     expiresAt,

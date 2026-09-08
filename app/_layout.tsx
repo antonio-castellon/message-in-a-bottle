@@ -35,7 +35,7 @@ export default function RootLayout() {
 }
 
 function RootNav() {
-  const { ready } = useApp();
+  const { ready, t } = useApp();
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
@@ -54,8 +54,10 @@ function RootNav() {
           contentStyle: { backgroundColor: colors.bg },
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="message/[id]" options={{ title: 'Message' }} />
-        <Stack.Screen name="blocked" options={{ title: 'Block list' }} />
+        <Stack.Screen name="message/[id]" options={{ title: t('message.title') }} />
+        <Stack.Screen name="blocked" options={{ title: t('blocked.title') }} />
+        <Stack.Screen name="languages" options={{ title: t('languages.title') }} />
+        <Stack.Screen name="app-language" options={{ title: t('languages.appTitle') }} />
       </Stack>
     </ThemeProvider>
   );

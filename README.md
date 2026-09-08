@@ -15,8 +15,20 @@ Every message has:
 
 - `messageId` — UUID generated when the message is created
 - `originDeviceId` — UUID of the originating phone
+- `language` — ISO language code of the text (en, es, fr, de, it, …)
 - a topic (sports, politics, philosophy, lifestyle, science, art, humor, news, other)
 - optional expiry: once it lapses, it stops being sent and forwarded
+
+## Languages and receive filters
+
+The interface can be switched among many app languages (English, Spanish, French, German, Italian, and dozens more). Missing UI strings fall back to English.
+
+Incoming GATT messages are filtered **on the receiver**:
+
+- **Languages to receive** — default is **only the app language**. You can select several languages; others are dropped.
+- **Topics to receive** — default is **all topics**. Uncheck a topic (sports, politics, …) to ignore it.
+
+Both filters are in Settings. The same filters are sent in the GATT handshake so peers do not waste airtime on content you would discard.
 
 ## Loop prevention and anonymity
 
@@ -46,7 +58,7 @@ Session: `hello` (ID catalog) → `offer` (messages you are missing + the peer c
 - **Inbox** — messages that arrived
 - **Bottle** — pool this phone transmits (your own + bottled messages from others)
 - **Write** — compose a message, bottle/direct mode, expiry
-- **Settings** — radio, interval, accept bottles, regenerate UUID, block list, nearby queue
+- **Settings** — app language, languages to receive, topics to receive, radio, interval, accept bottles, regenerate UUID, block list, nearby queue
 
 On someone else’s message you can stop forwarding it or delete it. On your own you can pull it from the pool or switch it to direct.
 

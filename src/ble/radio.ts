@@ -20,7 +20,7 @@ import {
 } from 'munim-bluetooth';
 
 import { nowIso } from '../domain/ids';
-import { isDeviceBlocked, messagesPeerNeeds } from '../domain/pool';
+import { filterForPeer, isDeviceBlocked, messagesPeerNeeds } from '../domain/pool';
 import type {
   BlockedEntry,
   BottleMessage,
@@ -37,6 +37,7 @@ export interface RadioHost {
   getSettings: () => Settings;
   getBlocked: () => BlockedEntry[];
   catalogIds: () => string[];
+  getReceiveFilter: () => { languages: string[]; categories: string[] };
   offerFor: (have: string[]) => BottleMessage[];
   ingest: (messages: BottleMessage[], fromDeviceId: string) => void;
   onStatus: (status: RadioStatus, detail?: string) => void;
@@ -357,11 +358,14 @@ class RadioEngine {
 
       await subscribeToCharacteristic(peripheralId, MIAB_SERVICE, MIAB_TX);
       const pending = this.waitForPeerMessage(peripheralId, 10_000);
+      const want = this.host.getReceiveFilter();
       await this.writeFrames(peripheralId, {
         v: 1,
         t: 'hello',
         deviceId: this.host.getSettings().deviceId,
         have: this.host.catalogIds(),
+        languages: want.languages,
+        categories: want.categories,
       });
       const offer = await pending;
       if (offer.t === 'reject') {
@@ -373,7 +377,11 @@ class RadioEngine {
         throw new Error(`unexpected reply: ${offer.t}`);
       }
       this.host.ingest(offer.messages, offer.deviceId);
-      const toPush = messagesPeerNeeds(this.host.offerFor(offer.have ?? []), offer.have ?? []);
+      const toPush = filterForPeer(
+        messagesPeerNeeds(this.host.offerFor(offer.have ?? []), offer.have ?? []),
+        offer.languages,
+        offer.categories,
+      );
       const doneWait = this.waitForPeerMessage(peripheralId, 8_000);
       await this.writeFrames(peripheralId, { v: 1, t: 'push', messages: toPush });
       try {
@@ -461,12 +469,19 @@ class RadioEngine {
         await this.notifyFrames({ v: 1, t: 'reject', reason: 'blocked' });
         return;
       }
-      const offer = messagesPeerNeeds(this.host.offerFor(message.have), message.have);
+      const ours = this.host.getReceiveFilter();
+      const offer = filterForPeer(
+        messagesPeerNeeds(this.host.offerFor(message.have), message.have),
+        message.languages,
+        message.categories,
+      );
       await this.notifyFrames({
         v: 1,
         t: 'offer',
         deviceId: this.host.getSettings().deviceId,
         have: this.host.catalogIds(),
+        languages: ours.languages,
+        categories: ours.categories,
         messages: offer,
       });
       return;

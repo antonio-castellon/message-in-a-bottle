@@ -3,6 +3,7 @@ import { Alert, Pressable, ScrollView, StyleSheet, Switch, Text, View } from 're
 
 import { isExpired } from '@/src/domain/ids';
 import { categoryLabel, expiryLabel, relativeTime, shortId } from '@/src/format';
+import { languageLabel } from '@/src/i18n';
 import { useApp } from '@/src/state/AppState';
 import { colors, space } from '@/src/theme';
 import { useEffect } from 'react';
@@ -18,7 +19,9 @@ export default function MessageDetailScreen() {
     setBottleForward,
     setInPool,
     blockUuid,
+    t,
   } = useApp();
+  const locale = settings.uiLanguage;
   const message = messages.find((m) => m.messageId === id);
 
   useEffect(() => {
@@ -28,7 +31,7 @@ export default function MessageDetailScreen() {
   if (!message) {
     return (
       <View style={styles.screen}>
-        <Text style={styles.missing}>This message is no longer on the phone.</Text>
+        <Text style={styles.missing}>{t('message.missing')}</Text>
       </View>
     );
   }
@@ -38,10 +41,10 @@ export default function MessageDetailScreen() {
   const canForward = !item.owned && item.bottleMode && settings.acceptBottleMode && !expired;
 
   function confirmDelete() {
-    Alert.alert('Delete message', 'It will leave the inbox and the pool on this phone.', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('message.deleteTitle'), t('message.deleteBody'), [
+      { text: t('settings.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('message.delete'),
         style: 'destructive',
         onPress: () => {
           void removeMessage(item.messageId).then(() => router.back());
@@ -51,13 +54,10 @@ export default function MessageDetailScreen() {
   }
 
   function confirmBlockOrigin() {
-    Alert.alert(
-      'Block origin',
-      `No more messages will be accepted from UUID ${item.originDeviceId}.`,
-      [
-        { text: 'Cancel', style: 'cancel' },
-        {
-          text: 'Block',
+    Alert.alert(t('message.blockOrigin'), t('message.blockOriginBody', { id: item.originDeviceId }), [
+      { text: t('settings.cancel'), style: 'cancel' },
+      {
+        text: t('message.block'),
           style: 'destructive',
           onPress: () => {
             void blockUuid(item.originDeviceId, 'device', 'message origin').then(() =>
@@ -71,33 +71,30 @@ export default function MessageDetailScreen() {
 
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.category}>{categoryLabel(item.category)}</Text>
+      <Text style={styles.category}>{categoryLabel(item.category, locale)}</Text>
       <Text style={styles.body}>{item.text}</Text>
 
       <View style={styles.card}>
-        <Line label="Message" value={item.messageId} />
-        <Line label="Origin" value={item.originDeviceId} />
+        <Line label={t('message.fieldMessage')} value={item.messageId} />
+        <Line label={t('message.fieldOrigin')} value={item.originDeviceId} />
         <Line
-          label="Received from"
-          value={item.receivedFromDeviceId ?? (item.owned ? 'this phone' : '—')}
+          label={t('message.fieldFrom')}
+          value={item.receivedFromDeviceId ?? (item.owned ? t('message.thisPhone') : '—')}
         />
-        <Line label="Created" value={relativeTime(item.createdAt)} />
-        <Line label="Received" value={relativeTime(item.receivedAt)} />
-        <Line label="Hops" value={String(item.hopCount)} />
-        <Line label="Original mode" value={item.bottleMode ? 'bottle' : 'direct'} />
-        <Line label="Expiry" value={expiryLabel(item.expiresAt) ?? 'no expiry'} />
+        <Line label={t('message.created')} value={relativeTime(item.createdAt, locale)} />
+        <Line label={t('message.received')} value={relativeTime(item.receivedAt, locale)} />
+        <Line label={t('message.hops')} value={String(item.hopCount)} />
+        <Line label={t('message.mode')} value={item.bottleMode ? t('message.bottle') : t('message.direct')} />
+        <Line label={t('message.language')} value={languageLabel(item.language)} />
+        <Line label={t('message.expiry')} value={expiryLabel(item.expiresAt, locale) ?? t('message.noExpiry')} />
       </View>
 
       {!item.owned ? (
         <View style={styles.card}>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>Forward as a bottle</Text>
-              <Text style={styles.hint}>
-                {canForward
-                  ? 'This message enters your pool and will be transmitted to other phones.'
-                  : 'Cannot forward: it was not a bottle, you turned the mode off, or it expired.'}
-              </Text>
+              <Text style={styles.rowTitle}>{t('message.forward')}</Text>
+              <Text style={styles.hint}>{canForward ? t('message.forwardOn') : t('message.forwardOff')}</Text>
             </View>
             <Switch
               value={item.bottleForwardEnabled && item.inBroadcastPool}
@@ -112,8 +109,8 @@ export default function MessageDetailScreen() {
         <View style={styles.card}>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>Include in the pool</Text>
-              <Text style={styles.hint}>If you remove it, this phone stops transmitting it.</Text>
+              <Text style={styles.rowTitle}>{t('message.includePool')}</Text>
+              <Text style={styles.hint}>{t('message.includeHint')}</Text>
             </View>
             <Switch
               value={item.inBroadcastPool}
@@ -124,10 +121,8 @@ export default function MessageDetailScreen() {
           </View>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>Message in a bottle</Text>
-              <Text style={styles.hint}>
-                Whoever receives it will add it to their pool. Turn this off for a direct send.
-              </Text>
+              <Text style={styles.rowTitle}>{t('compose.bottle')}</Text>
+              <Text style={styles.hint}>{t('message.bottleHint')}</Text>
             </View>
             <Switch
               value={item.bottleMode}
@@ -140,11 +135,13 @@ export default function MessageDetailScreen() {
       )}
 
       <Pressable onPress={confirmDelete} style={styles.danger}>
-        <Text style={styles.dangerText}>Delete from this phone</Text>
+        <Text style={styles.dangerText}>{t('message.deleteFromPhone')}</Text>
       </Pressable>
       {!item.owned ? (
         <Pressable onPress={confirmBlockOrigin} style={styles.ghost}>
-          <Text style={styles.ghostText}>Block origin {shortId(item.originDeviceId)}</Text>
+          <Text style={styles.ghostText}>
+            {t('message.blockOrigin')} {shortId(item.originDeviceId)}
+          </Text>
         </Pressable>
       ) : null}
     </ScrollView>

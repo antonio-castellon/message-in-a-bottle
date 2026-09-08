@@ -2,6 +2,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { LocalMessage } from '../domain/types';
 import { categoryLabel, expiryLabel, relativeTime, shortId } from '../format';
+import { languageNative } from '../i18n';
+import { useApp } from '../state/AppState';
 import { colors, space } from '../theme';
 
 export function MessageCard({
@@ -11,24 +13,27 @@ export function MessageCard({
   message: LocalMessage;
   onPress?: () => void;
 }) {
-  const expiry = expiryLabel(message.expiresAt);
+  const { t, settings } = useApp();
+  const locale = settings.uiLanguage;
+  const expiry = expiryLabel(message.expiresAt, locale);
   return (
     <Pressable onPress={onPress} style={({ pressed }) => [styles.card, pressed && styles.pressed]}>
       <View style={styles.meta}>
-        <Text style={styles.category}>{categoryLabel(message.category)}</Text>
+        <Text style={styles.category}>{categoryLabel(message.category, locale)}</Text>
         <Text style={styles.time}>
-          {relativeTime(message.owned ? message.createdAt : message.receivedAt)}
+          {relativeTime(message.owned ? message.createdAt : message.receivedAt, locale)}
         </Text>
       </View>
       <Text style={styles.body}>{message.text}</Text>
       <View style={styles.flags}>
-        {message.owned ? <Flag label="yours" tone="amber" /> : null}
+        {message.owned ? <Flag label={t('card.yours')} tone="amber" /> : null}
         {message.bottleMode && message.bottleForwardEnabled ? (
-          <Flag label="bottle" tone="accent" />
+          <Flag label={t('card.bottle')} tone="accent" />
         ) : (
-          <Flag label="direct" tone="muted" />
+          <Flag label={t('card.direct')} tone="muted" />
         )}
-        {!message.seen && !message.owned ? <Flag label="new" tone="good" /> : null}
+        {!message.seen && !message.owned ? <Flag label={t('card.new')} tone="good" /> : null}
+        {message.language ? <Flag label={languageNative(message.language)} tone="muted" /> : null}
         {expiry ? <Flag label={expiry} tone="muted" /> : null}
         <Text style={styles.id}>#{shortId(message.messageId)}</Text>
       </View>

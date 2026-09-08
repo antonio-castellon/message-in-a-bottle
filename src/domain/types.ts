@@ -12,16 +12,16 @@ export const CATEGORIES = [
 
 export type Category = (typeof CATEGORIES)[number];
 
-export const CATEGORY_LABELS: Record<Category, string> = {
-  sports: 'Sports',
-  politics: 'Politics',
-  philosophy: 'Philosophy',
-  lifestyle: 'Lifestyle',
-  science: 'Science',
-  art: 'Art',
-  humor: 'Humor',
-  news: 'News',
-  other: 'Other',
+export const TOPIC_KEYS: Record<Category, `topic.${Category}`> = {
+  sports: 'topic.sports',
+  politics: 'topic.politics',
+  philosophy: 'topic.philosophy',
+  lifestyle: 'topic.lifestyle',
+  science: 'topic.science',
+  art: 'topic.art',
+  humor: 'topic.humor',
+  news: 'topic.news',
+  other: 'topic.other',
 };
 
 export const MAX_TEXT_LENGTH = 280;
@@ -35,6 +35,8 @@ export interface BottleMessage {
   originDeviceId: string;
   text: string;
   category: Category;
+  /** ISO 639 language code of the message body. */
+  language: string;
   bottleMode: boolean;
   createdAt: string;
   expiresAt: string | null;
@@ -58,6 +60,12 @@ export interface Settings {
   maxHops: number;
   radioEnabled: boolean;
   acceptBottleMode: boolean;
+  /** UI locale. */
+  uiLanguage: string;
+  /** Message languages admitted into the inbox. Default: the app language only. */
+  acceptedLanguages: string[];
+  /** Topics admitted into the inbox. Default: all topics. */
+  acceptedCategories: Category[];
 }
 
 export interface BlockedEntry {
@@ -98,6 +106,8 @@ export interface HelloPayload {
   t: 'hello';
   deviceId: string;
   have: string[];
+  languages?: string[];
+  categories?: string[];
 }
 
 export interface OfferPayload {
@@ -105,6 +115,8 @@ export interface OfferPayload {
   t: 'offer';
   deviceId: string;
   have: string[];
+  languages?: string[];
+  categories?: string[];
   messages: BottleMessage[];
 }
 

@@ -1,9 +1,11 @@
 import { SymbolView } from 'expo-symbols';
 import { Tabs } from 'expo-router';
 
+import { useApp } from '@/src/state/AppState';
 import { colors } from '@/src/theme';
 
 export default function TabLayout() {
+  const { t } = useApp();
   return (
     <Tabs
       screenOptions={{
@@ -21,7 +23,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Inbox',
+          title: t('tabs.inbox'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'tray.and.arrow.down', android: 'inbox', web: 'inbox' }}
@@ -34,7 +36,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="pool"
         options={{
-          title: 'Bottle',
+          title: t('tabs.bottle'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{
@@ -51,7 +53,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="compose"
         options={{
-          title: 'Write',
+          title: t('tabs.write'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'square.and.pencil', android: 'edit', web: 'edit' }}
@@ -64,7 +66,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Settings',
+          title: t('tabs.settings'),
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'gearshape', android: 'settings', web: 'settings' }}

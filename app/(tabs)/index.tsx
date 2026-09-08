@@ -11,7 +11,7 @@ import { MessageCard } from '@/src/ui/MessageCard';
 import { RadioBanner } from '@/src/ui/RadioBanner';
 
 export default function InboxScreen() {
-  const { inbox } = useApp();
+  const { inbox, t, settings } = useApp();
   const router = useRouter();
   const [filter, setFilter] = useState<Category | 'all'>('all');
   const data = useMemo(
@@ -28,16 +28,13 @@ export default function InboxScreen() {
         ListHeaderComponent={
           <View style={styles.header}>
             <RadioBanner />
-            <Text style={styles.lead}>
-              Messages that arrived phone to phone. Direct ones stay here. Bottles also enter
-              the forwarding pool unless you silence them.
-            </Text>
+            <Text style={styles.lead}>{t('inbox.lead')}</Text>
             <View style={styles.chips}>
-              <Chip label="All" active={filter === 'all'} onPress={() => setFilter('all')} />
+              <Chip label={t('inbox.filterAll')} active={filter === 'all'} onPress={() => setFilter('all')} />
               {CATEGORIES.map((c) => (
                 <Chip
                   key={c}
-                  label={categoryLabel(c)}
+                  label={categoryLabel(c, settings.uiLanguage)}
                   active={filter === c}
                   onPress={() => setFilter(c)}
                 />
@@ -47,8 +44,8 @@ export default function InboxScreen() {
         }
         ListEmptyComponent={
           <EmptyState
-            title="Calm sea"
-            body="When a nearby phone sends a message, it will show up here. No internet, no server."
+            title={t('inbox.emptyTitle')}
+            body={t('inbox.emptyBody')}
           />
         }
         renderItem={({ item }) => (
