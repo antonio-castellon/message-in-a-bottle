@@ -219,6 +219,11 @@
           <p class="mono">English · en</p>
         </div>
         <div class="section">
+          <h3>Blacklist</h3>
+          <p class="hint">1 UUIDs blocked. Messages from them are rejected and GATT is not opened.</p>
+          <div style="margin-top:8px"><span class="ghost">Open blacklist</span></div>
+        </div>
+        <div class="section">
           <h3>Topics to receive</h3>
           <div class="chips" style="margin-top:8px">
             <span class="chip on">Sports</span><span class="chip on">Politics</span><span class="chip on">Philosophy</span>
@@ -248,7 +253,6 @@
           <span class="ghost">Show my QR</span>
           <span class="ghost">Scan a QR</span>
         </div>
-        <div class="field">uuid…</div>
         <div class="field">Name, e.g. Ana, work phone…</div>
         <div class="field">uuid…</div>
         <div class="cta">Add to whitelist</div>
@@ -284,6 +288,29 @@
       <div class="body">
         <p class="lead center">Point the camera at another phone’s Message in a Bottle QR.</p>
         <div class="camera"><div class="finder"></div></div>
+      </div>
+    </div>
+
+    <div class="phone" id="blocked">
+      <div class="status"><span>9:41</span><span class="back">‹ Settings</span></div>
+      <div class="header">Blacklist</div>
+      <div class="body">
+        <p class="lead">A blocked phone UUID is not accepted and is never contacted over GATT. Each entry needs a name so you can tell them apart.</p>
+        <div class="chips">
+          <span class="chip on">Origin phone</span>
+          <span class="chip">Message</span>
+        </div>
+        <div class="field">Name, e.g. spam bot…</div>
+        <div class="field">uuid…</div>
+        <div class="cta">Add to blacklist</div>
+        <div class="card hline">
+          <div>
+            <div class="lbl">phone</div>
+            <div style="font-weight:700;font-size:16px">Spam nearby</div>
+            <div class="mono">aa11bb22-cc33-4d44-8e55-ff6677889900</div>
+          </div>
+          <span class="danger">Remove</span>
+        </div>
       </div>
     </div>
   </div>

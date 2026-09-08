@@ -60,7 +60,7 @@ export default function MessageDetailScreen() {
         text: t('message.block'),
           style: 'destructive',
           onPress: () => {
-            void blockUuid(item.originDeviceId, 'device', 'message origin').then(() =>
+            void blockUuid(item.originDeviceId, 'device', t('blocked.defaultPhoneLabel')).then(() =>
               router.back(),
             );
           },

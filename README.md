@@ -25,9 +25,10 @@ Android and iPhone app for sending **text messages** between nearby phones over 
   <img src="docs/images/screen-whitelist.png" width="180" alt="UUID whitelist">
   <img src="docs/images/screen-share.png" width="180" alt="Share UUID QR">
   <img src="docs/images/screen-scan.png" width="180" alt="Scan UUID QR">
+  <img src="docs/images/screen-blocked.png" width="180" alt="Blacklist">
 </p>
 
-<p align="center">Whitelist · Share QR · Scan QR</p>
+<p align="center">Whitelist · Share QR · Scan QR · Blacklist</p>
 
 ## How a message travels
 
@@ -65,13 +66,13 @@ By default the radio is open to any nearby phone (except the block list). You ca
 - **Scan a QR** — the other person scans it, **gives it a name**, and adds you to **their** whitelist (or you scan theirs).
 - You can also paste a UUID by hand; a **name is required** so each entry is recognizable (and can be renamed later).
 
-The block list still wins: a blocked UUID is never contacted, even if it is on the whitelist.
+The **blacklist** still wins: a blocked UUID is never contacted, even if it is on the whitelist. Manage it in Settings → Blacklist (add/remove/rename phones or message IDs, each with a display name).
 
 ## Loop prevention and anonymity
 
 - A message already known (same `messageId`) is ignored.
 - Each install generates a phone UUID. You can **regenerate** it in Settings to drop the trail.
-- UUID block list (phone or message): no GATT session with a blocked origin, and that content is rejected.
+- UUID blacklist (phone or message, each with a name): no GATT session with a blocked origin, and that content is rejected.
 - Hop cap (`maxHops`, 32) so a bottle cannot circulate forever.
 
 ## GATT radio and queue
@@ -95,7 +96,7 @@ Session: `hello` (ID catalog) → `offer` (messages you are missing + the peer c
 - **Inbox** — messages that arrived
 - **Bottle** — pool this phone transmits (your own + bottled messages from others)
 - **Write** — compose a message, bottle/direct mode, expiry
-- **Settings** — app language, languages to receive, topics to receive, UUID whitelist and QR share, radio, interval, accept bottles, regenerate UUID, block list, nearby queue
+- **Settings** — app language, languages to receive, topics to receive, UUID whitelist and QR share, blacklist, radio, interval, accept bottles, regenerate UUID, nearby queue
 
 On someone else’s message you can stop forwarding it or delete it. On your own you can pull it from the pool or switch it to direct.
 

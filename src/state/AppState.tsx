@@ -60,7 +60,8 @@ interface AppContextValue {
   setBottleForward: (messageId: string, enabled: boolean) => Promise<void>;
   setInPool: (messageId: string, inPool: boolean) => Promise<void>;
   markSeen: (messageId: string) => Promise<void>;
-  blockUuid: (uuid: string, kind: BlockedEntry['kind'], note?: string) => Promise<void>;
+  blockUuid: (uuid: string, kind: BlockedEntry['kind'], label: string) => Promise<void>;
+  renameBlocked: (uuid: string, label: string) => Promise<void>;
   unblockUuid: (uuid: string) => Promise<void>;
   addToWhitelist: (uuid: string, label: string) => Promise<void>;
   renameWhitelist: (uuid: string, label: string) => Promise<void>;
@@ -252,11 +253,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     [persistMessages],
   );
 
-  const blockUuid = useCallback(async (uuid: string, kind: BlockedEntry['kind'], note?: string) => {
+  const blockUuid = useCallback(async (uuid: string, kind: BlockedEntry['kind'], label: string) => {
     const id = uuid.trim().toLowerCase();
-    if (!id) return;
+    const name = label.replace(/\s+/g, ' ').trim().slice(0, 40);
+    if (!id || !name) return;
     const next = [
-      { uuid: id, kind, addedAt: nowIso(), note },
+      { uuid: id, kind, label: name, addedAt: nowIso() },
       ...blockedRef.current.filter((b) => b.uuid.toLowerCase() !== id),
     ];
     blockedRef.current = next;
@@ -270,6 +272,17 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       await persistMessages(messagesRef.current.filter((m) => m.messageId.toLowerCase() !== id));
     }
   }, [persistMessages]);
+
+  const renameBlocked = useCallback(async (uuid: string, label: string) => {
+    const name = label.replace(/\s+/g, ' ').trim().slice(0, 40);
+    if (!name) return;
+    const next = blockedRef.current.map((e) =>
+      e.uuid.toLowerCase() === uuid.toLowerCase() ? { ...e, label: name } : e,
+    );
+    blockedRef.current = next;
+    setBlocked(next);
+    await saveBlocked(next);
+  }, []);
 
   const unblockUuid = useCallback(async (uuid: string) => {
     const next = blockedRef.current.filter((b) => b.uuid.toLowerCase() !== uuid.toLowerCase());
@@ -389,6 +402,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setInPool,
       markSeen,
       blockUuid,
+      renameBlocked,
       unblockUuid,
       addToWhitelist,
       renameWhitelist,
@@ -418,6 +432,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setInPool,
     markSeen,
     blockUuid,
+    renameBlocked,
     unblockUuid,
     addToWhitelist,
     renameWhitelist,

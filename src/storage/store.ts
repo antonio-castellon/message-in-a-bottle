@@ -88,7 +88,12 @@ export async function loadState(): Promise<PersistedState> {
   return {
     settings: merged,
     messages: migrated,
-    blocked,
+    blocked: blocked.map((e) => ({
+      uuid: e.uuid,
+      kind: e.kind,
+      label: (e.label || (e as { note?: string }).note || e.uuid.slice(0, 8)).trim(),
+      addedAt: e.addedAt,
+    })),
     whitelist: whitelist.map((e) => ({
       uuid: e.uuid,
       label: (e.label || (e as { note?: string }).note || e.uuid.slice(0, 8)).trim(),

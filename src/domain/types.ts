@@ -75,8 +75,9 @@ export interface Settings {
 export interface BlockedEntry {
   uuid: string;
   kind: 'device' | 'message';
+  /** User-facing name so the UUID is recognizable. */
+  label: string;
   addedAt: string;
-  note?: string;
 }
 
 export interface WhitelistEntry {
