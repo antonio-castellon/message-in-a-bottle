@@ -1,6 +1,25 @@
+<p align="center">
+  <img src="docs/images/icon.png" width="168" alt="App icon: a glass bottle with a rolled message floating in dark water">
+</p>
+
 # Message in a Bottle
 
 Android and iPhone app for sending **text messages** between nearby phones over **Bluetooth Low Energy GATT**. There is no server and no internet: delivery is phone to phone.
+
+<p align="center">
+  <img src="docs/images/hero.jpg" alt="A corked glass bottle with a parchment inside, drifting on moonlit water">
+</p>
+
+## Screens
+
+<p align="center">
+  <img src="docs/images/screen-inbox.png" width="200" alt="Inbox screen">
+  <img src="docs/images/screen-bottle.png" width="200" alt="Bottle pool screen">
+  <img src="docs/images/screen-write.png" width="200" alt="Write screen">
+  <img src="docs/images/screen-settings.png" width="200" alt="Settings screen">
+</p>
+
+Inbox · Bottle · Write · Settings
 
 ## How a message travels
 

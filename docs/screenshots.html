@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>MIAB screens</title>
+  <style>
+    :root {
+      --bg: #071018;
+      --bgAlt: #0b1822;
+      --surface: #10202c;
+      --card: #162a38;
+      --line: rgba(212, 175, 116, 0.18);
+      --accent: #2a9d8f;
+      --accentDim: #1f6f64;
+      --amber: #e9c46a;
+      --sand: #d4a373;
+      --paper: #f4efe6;
+      --text: #e8eef4;
+      --muted: #8aa0b5;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #111; font-family: -apple-system, Segoe UI, sans-serif; }
+    .row { display: flex; gap: 28px; padding: 28px; }
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: var(--bg);
+      color: var(--text);
+      border-radius: 36px;
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 20px 60px rgba(0,0,0,.45);
+    }
+    .status { height: 48px; padding: 16px 20px 0; font-size: 13px; color: var(--muted); display: flex; justify-content: space-between; }
+    .header { padding: 8px 20px 12px; font-size: 22px; font-weight: 700; color: var(--paper); }
+    .body { flex: 1; overflow: hidden; padding: 0 16px 12px; display: flex; flex-direction: column; gap: 12px; }
+    .banner {
+      display: flex; gap: 10px; align-items: center;
+      background: var(--surface); border: 1px solid var(--line);
+      border-radius: 14px; padding: 12px 16px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 5px; background: var(--accent); }
+    .banner b { display: block; font-size: 14px; }
+    .banner span { color: var(--muted); font-size: 12px; }
+    .lead { color: var(--muted); font-size: 14px; line-height: 20px; }
+    .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+    .chip {
+      border-radius: 999px; padding: 6px 12px; font-size: 12px; font-weight: 600;
+      background: var(--card); border: 1px solid var(--line); color: var(--muted);
+    }
+    .chip.on { background: var(--accentDim); border-color: var(--accent); color: var(--paper); }
+    .card {
+      background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px;
+    }
+    .meta { display: flex; justify-content: space-between; color: var(--sand); font-size: 12px; letter-spacing: 1.2px; text-transform: uppercase; font-weight: 700; }
+    .meta .time { color: var(--muted); text-transform: none; letter-spacing: 0; font-weight: 400; }
+    .msg { color: var(--paper); font-size: 17px; line-height: 24px; margin: 10px 0; }
+    .flags { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+    .flag { border-radius: 999px; padding: 3px 8px; font-size: 11px; font-weight: 600; }
+    .amber { background: rgba(233,196,106,.18); }
+    .acc { background: rgba(42,157,143,.2); }
+    .mut { background: rgba(138,160,181,.16); }
+    .id { margin-left: auto; color: var(--muted); font-size: 11px; }
+    .tabs {
+      height: 72px; background: var(--bgAlt); border-top: 1px solid var(--line);
+      display: flex; align-items: center; justify-content: space-around; color: var(--muted); font-size: 11px;
+    }
+    .tabs .on { color: var(--amber); font-weight: 700; }
+    .tab { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+    .ico { font-size: 18px; }
+    label.lbl { color: var(--sand); font-weight: 700; letter-spacing: .6px; text-transform: uppercase; font-size: 12px; }
+    .input {
+      min-height: 120px; background: var(--card); border: 1px solid var(--line); border-radius: 16px;
+      padding: 16px; color: var(--paper); font-size: 17px; line-height: 24px;
+    }
+    .cta { background: var(--accent); color: var(--bg); font-weight: 800; font-size: 16px; border-radius: 14px; padding: 14px; text-align: center; }
+    .section { background: var(--card); border: 1px solid var(--line); border-radius: 16px; padding: 16px; }
+    .section h3 { color: var(--sand); font-size: 12px; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+    .hint { color: var(--muted); font-size: 13px; line-height: 18px; }
+    .mono { font-family: ui-monospace, Menlo, monospace; font-size: 12px; color: var(--paper); margin: 6px 0; }
+    .row { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .switch { width: 42px; height: 24px; border-radius: 12px; background: var(--accentDim); position: relative; flex-shrink: 0; }
+    .switch:after { content: ""; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); position: absolute; right: 3px; top: 3px; }
+  </style>
+</head>
+<body>
+  <div class="row">
+    <div class="phone" id="inbox">
+      <div class="status"><span>9:41</span><span>MIAB</span></div>
+      <div class="header">Inbox</div>
+      <div class="body">
+        <div class="banner"><div class="dot"></div><div><b>On air · GATT</b><span>2 nearby · queue 1 · every 8s</span></div></div>
+        <p class="lead">Messages that arrived phone to phone. Direct ones stay here. Bottles also enter the forwarding pool unless you silence them.</p>
+        <div class="chips">
+          <span class="chip on">All</span><span class="chip">Sports</span><span class="chip">Politics</span><span class="chip">Philosophy</span><span class="chip">Lifestyle</span>
+        </div>
+        <div class="card">
+          <div class="meta"><span>Philosophy</span><span class="time">just now</span></div>
+          <div class="msg">The sea does not care who wrote the note. It only cares that someone is still listening.</div>
+          <div class="flags"><span class="flag acc">bottle</span><span class="flag mut">English</span><span class="id">#a1b2c3d4</span></div>
+        </div>
+        <div class="card">
+          <div class="meta"><span>Lifestyle</span><span class="time">12 min ago</span></div>
+          <div class="msg">If you find this, walk a little slower today. The city can wait.</div>
+          <div class="flags"><span class="flag mut">direct</span><span class="flag mut">Español</span><span class="id">#e5f60718</span></div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab on"><span class="ico">▾</span>Inbox</div>
+        <div class="tab"><span class="ico">▣</span>Bottle</div>
+        <div class="tab"><span class="ico">✎</span>Write</div>
+        <div class="tab"><span class="ico">⚙</span>Settings</div>
+      </div>
+    </div>
+
+    <div class="phone" id="bottle">
+      <div class="status"><span>9:41</span><span>MIAB</span></div>
+      <div class="header">Bottle</div>
+      <div class="body">
+        <div class="banner"><div class="dot"></div><div><b>On air · GATT</b><span>2 nearby · queue 1 · every 8s</span></div></div>
+        <p class="lead">What this phone is willing to transmit. 1 yours · 1 bottled from others. A direct message is not forwarded; a bottle is, until it expires or you pull it from the pool.</p>
+        <div class="card">
+          <div class="meta"><span>Humor</span><span class="time">just now</span></div>
+          <div class="msg">I put this in a bottle because shouting at the ocean felt rude.</div>
+          <div class="flags"><span class="flag amber">yours</span><span class="flag acc">bottle</span><span class="flag mut">English</span></div>
+        </div>
+        <div class="card">
+          <div class="meta"><span>Science</span><span class="time">1 h ago</span></div>
+          <div class="msg">Bluetooth is just a very short ocean. Pass it on.</div>
+          <div class="flags"><span class="flag acc">bottle</span><span class="flag mut">Français</span></div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab"><span class="ico">▾</span>Inbox</div>
+        <div class="tab on"><span class="ico">▣</span>Bottle</div>
+        <div class="tab"><span class="ico">✎</span>Write</div>
+        <div class="tab"><span class="ico">⚙</span>Settings</div>
+      </div>
+    </div>
+
+    <div class="phone" id="write">
+      <div class="status"><span>9:41</span><span>MIAB</span></div>
+      <div class="header">Write</div>
+      <div class="body">
+        <p class="lead">A text message, no server. Choose whether it travels only from this phone or becomes a bottle and is passed from hand to hand.</p>
+        <div class="input">If you are reading this, you were close enough.</div>
+        <div class="lbl">Topic</div>
+        <div class="chips"><span class="chip">Sports</span><span class="chip">Politics</span><span class="chip on">Philosophy</span><span class="chip">Lifestyle</span></div>
+        <div class="lbl">Message language</div>
+        <div class="chips"><span class="chip on">English</span><span class="chip">Español</span><span class="chip">Français</span><span class="chip">Deutsch</span><span class="chip">Italiano</span></div>
+        <div class="card row">
+          <div><div class="lbl">Message in a bottle</div><div class="hint">When on, whoever receives it will rebroadcast it.</div></div>
+          <div class="switch"></div>
+        </div>
+        <div class="cta">Launch bottle</div>
+      </div>
+      <div class="tabs">
+        <div class="tab"><span class="ico">▾</span>Inbox</div>
+        <div class="tab"><span class="ico">▣</span>Bottle</div>
+        <div class="tab on"><span class="ico">✎</span>Write</div>
+        <div class="tab"><span class="ico">⚙</span>Settings</div>
+      </div>
+    </div>
+
+    <div class="phone" id="settings">
+      <div class="status"><span>9:41</span><span>MIAB</span></div>
+      <div class="header">Settings</div>
+      <div class="body">
+        <div class="banner"><div class="dot"></div><div><b>On air · GATT</b><span>2 nearby · queue 1 · every 8s</span></div></div>
+        <div class="section">
+          <h3>App language</h3>
+          <p class="hint">Language of the interface. Incoming messages default to this language only.</p>
+          <p class="mono">English · en</p>
+        </div>
+        <div class="section">
+          <h3>Languages to receive</h3>
+          <p class="hint">By default only messages in the app language are accepted.</p>
+          <p class="mono">1 selected</p>
+        </div>
+        <div class="section">
+          <h3>Topics to receive</h3>
+          <div class="chips" style="margin-top:8px">
+            <span class="chip on">Sports</span><span class="chip on">Politics</span><span class="chip on">Philosophy</span><span class="chip on">Science</span>
+          </div>
+        </div>
+        <div class="section">
+          <h3>GATT radio</h3>
+          <div class="row"><div><b>Transmit and listen</b><div class="hint">No internet.</div></div><div class="switch"></div></div>
+        </div>
+      </div>
+      <div class="tabs">
+        <div class="tab"><span class="ico">▾</span>Inbox</div>
+        <div class="tab"><span class="ico">▣</span>Bottle</div>
+        <div class="tab"><span class="ico">✎</span>Write</div>
+        <div class="tab on"><span class="ico">⚙</span>Settings</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
