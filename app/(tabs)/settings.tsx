@@ -56,16 +56,16 @@ export default function SettingsScreen() {
 
   function confirmRegen() {
     Alert.alert(
-      'Regenerar UUID del móvil',
-      'Se crea una identidad nueva para mantener el anonimato. Los mensajes que tú escribiste pasarán a firmarse con el UUID nuevo. Los ya difundidos pueden seguir mostrando el anterior en otros teléfonos.',
+      'Regenerate this phone UUID',
+      'A new identity is created to keep you anonymous. Messages you wrote will be signed with the new UUID. Copies already spread may still show the old one on other phones.',
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Regenerar',
+          text: 'Regenerate',
           style: 'destructive',
           onPress: () => {
             void regenerateDeviceId().then((id) => {
-              Alert.alert('Nueva identidad', id);
+              Alert.alert('New identity', id);
             });
           },
         },
@@ -77,33 +77,33 @@ export default function SettingsScreen() {
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <RadioBanner />
 
-      <Section title="Identidad">
+      <Section title="Identity">
         <Text style={styles.mono}>{settings.deviceId}</Text>
         <Text style={styles.hint}>
-          UUID de origen de este móvil. Se genera al instalar y puedes regenerarlo cuando quieras.
+          Origin UUID for this phone. It is generated on install and you can regenerate it any time.
         </Text>
         <Pressable onPress={confirmRegen} style={styles.secondary}>
-          <Text style={styles.secondaryText}>Regenerar UUID</Text>
+          <Text style={styles.secondaryText}>Regenerate UUID</Text>
         </Pressable>
       </Section>
 
-      <Section title="Radio GATT">
+      <Section title="GATT radio">
         <Row
-          title="Transmitir y escuchar"
-          hint="Anuncia el servicio y escanea móviles cercanos. Sin internet."
+          title="Transmit and listen"
+          hint="Advertises the service and scans nearby phones. No internet."
           value={settings.radioEnabled}
           onValueChange={(v) => void toggleRadio(v)}
         />
         <Row
-          title="Aceptar botellas ajenas"
-          hint="Si se desactiva, los message-in-a-bottle recibidos no entran en tu pool de reenvío."
+          title="Accept bottles from others"
+          hint="If off, incoming message-in-a-bottle items do not enter your forwarding pool."
           value={settings.acceptBottleMode}
           onValueChange={(v) => void updateSettings({ acceptBottleMode: v })}
         />
-        <Text style={styles.label}>Intervalo entre conexiones (segundos)</Text>
+        <Text style={styles.label}>Interval between connections (seconds)</Text>
         <Text style={styles.hint}>
-          Con muchos UUID cerca, las sesiones GATT se serializan. Este intervalo es la pausa
-          entre un móvil y el siguiente.
+          When many UUIDs are nearby, GATT sessions are serialized. This interval is the pause
+          between one phone and the next.
         </Text>
         <TextInput
           value={intervalText}
@@ -112,7 +112,7 @@ export default function SettingsScreen() {
           keyboardType="number-pad"
           style={styles.num}
         />
-        <Text style={styles.label}>Enfriamiento tras un sync (segundos)</Text>
+        <Text style={styles.label}>Cooldown after a sync (seconds)</Text>
         <TextInput
           value={cooldownText}
           onChangeText={setCooldownText}
@@ -122,28 +122,28 @@ export default function SettingsScreen() {
         />
       </Section>
 
-      <Section title="Bloqueo">
+      <Section title="Blocking">
         <Text style={styles.hint}>
-          {blocked.length} UUID bloqueados. No se aceptan mensajes ni se abre GATT con ellos.
+          {blocked.length} UUIDs blocked. Messages from them are rejected and GATT is not opened.
         </Text>
         <Pressable onPress={() => router.push('/blocked')} style={styles.secondary}>
-          <Text style={styles.secondaryText}>Abrir lista de bloqueo</Text>
+          <Text style={styles.secondaryText}>Open block list</Text>
         </Pressable>
       </Section>
 
-      <Section title="Cola cercana">
+      <Section title="Nearby queue">
         <Text style={styles.hint}>
-          {peers.length} anuncios recientes · {queueSize} en cola. Un solo enlace GATT a la vez.
+          {peers.length} recent advertisements · {queueSize} queued. One GATT link at a time.
         </Text>
         {peers.length === 0 ? (
-          <Text style={styles.empty}>Nadie al alcance ahora mismo.</Text>
+          <Text style={styles.empty}>Nobody in range right now.</Text>
         ) : (
           peers.map((p) => (
             <View key={p.peripheralId} style={styles.peer}>
               <Text style={styles.peerName}>{p.name ?? 'MIAB'}</Text>
               <Text style={styles.monoSmall}>
                 {shortId(p.peripheralId, 12)} · rssi {p.rssi ?? '—'}
-                {p.inQueue ? ' · en cola' : ''}
+                {p.inQueue ? ' · queued' : ''}
                 {p.lastError ? ` · ${p.lastError}` : ''}
               </Text>
             </View>
@@ -151,9 +151,9 @@ export default function SettingsScreen() {
         )}
       </Section>
 
-      <Section title="Diario de radio">
+      <Section title="Radio log">
         {log.length === 0 ? (
-          <Text style={styles.empty}>Sin eventos todavía.</Text>
+          <Text style={styles.empty}>No events yet.</Text>
         ) : (
           log
             .slice()

@@ -1,27 +1,27 @@
 export const CATEGORIES = [
-  'deporte',
-  'politica',
-  'filosofia',
+  'sports',
+  'politics',
+  'philosophy',
   'lifestyle',
-  'ciencia',
-  'arte',
+  'science',
+  'art',
   'humor',
-  'noticias',
-  'otros',
+  'news',
+  'other',
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];
 
 export const CATEGORY_LABELS: Record<Category, string> = {
-  deporte: 'Deporte',
-  politica: 'Política',
-  filosofia: 'Filosofía',
+  sports: 'Sports',
+  politics: 'Politics',
+  philosophy: 'Philosophy',
   lifestyle: 'Lifestyle',
-  ciencia: 'Ciencia',
-  arte: 'Arte',
+  science: 'Science',
+  art: 'Art',
   humor: 'Humor',
-  noticias: 'Noticias',
-  otros: 'Otros',
+  news: 'News',
+  other: 'Other',
 };
 
 export const MAX_TEXT_LENGTH = 280;

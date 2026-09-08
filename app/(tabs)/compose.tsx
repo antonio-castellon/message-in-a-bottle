@@ -19,19 +19,19 @@ import { useApp } from '@/src/state/AppState';
 import { colors, space } from '@/src/theme';
 
 const EXPIRY_PRESETS: { label: string; ms: number | null }[] = [
-  { label: 'Sin caducidad', ms: null },
-  { label: '1 hora', ms: 60 * 60 * 1000 },
-  { label: '6 horas', ms: 6 * 60 * 60 * 1000 },
-  { label: '24 horas', ms: 24 * 60 * 60 * 1000 },
-  { label: '7 días', ms: 7 * 24 * 60 * 60 * 1000 },
-  { label: '30 días', ms: 30 * 24 * 60 * 60 * 1000 },
+  { label: 'No expiry', ms: null },
+  { label: '1 hour', ms: 60 * 60 * 1000 },
+  { label: '6 hours', ms: 6 * 60 * 60 * 1000 },
+  { label: '24 hours', ms: 24 * 60 * 60 * 1000 },
+  { label: '7 days', ms: 7 * 24 * 60 * 60 * 1000 },
+  { label: '30 days', ms: 30 * 24 * 60 * 60 * 1000 },
 ];
 
 export default function ComposeScreen() {
   const { compose } = useApp();
   const router = useRouter();
   const [text, setText] = useState('');
-  const [category, setCategory] = useState<Category>('otros');
+  const [category, setCategory] = useState<Category>('other');
   const [bottleMode, setBottleMode] = useState(true);
   const [expiryMs, setExpiryMs] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);
@@ -48,14 +48,14 @@ export default function ComposeScreen() {
       });
       setText('');
       Alert.alert(
-        bottleMode ? 'Botella lanzada' : 'Mensaje directo listo',
+        bottleMode ? 'Bottle launched' : 'Direct message ready',
         bottleMode
-          ? 'Quien lo reciba lo incorporará a su pool y lo seguirá transmitiendo.'
-          : 'Solo este móvil lo transmitirá. Los demás no lo reenviarán.',
+          ? 'Whoever receives it will add it to their pool and keep transmitting it.'
+          : 'Only this phone will transmit it. Others will not forward it.',
       );
       router.push('/(tabs)/pool');
     } catch (error) {
-      Alert.alert('No se pudo crear', error instanceof Error ? error.message : String(error));
+      Alert.alert('Could not create', error instanceof Error ? error.message : String(error));
     } finally {
       setBusy(false);
     }
@@ -67,14 +67,14 @@ export default function ComposeScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
       <ScrollView contentContainerStyle={styles.content} keyboardShouldPersistTaps="handled">
         <Text style={styles.lead}>
-          Un mensaje de texto, sin servidor. Elige si viaja solo desde este teléfono o si se
-          convierte en botella y pasa de mano en mano.
+          A text message, no server. Choose whether it travels only from this phone or becomes
+          a bottle and is passed from hand to hand.
         </Text>
 
         <TextInput
           value={text}
           onChangeText={(value) => setText(value.slice(0, MAX_TEXT_LENGTH))}
-          placeholder="Escribe el mensaje…"
+          placeholder="Write the message…"
           placeholderTextColor={colors.muted}
           multiline
           style={styles.input}
@@ -83,7 +83,7 @@ export default function ComposeScreen() {
           {text.trim().length}/{MAX_TEXT_LENGTH}
         </Text>
 
-        <Text style={styles.label}>Tema</Text>
+        <Text style={styles.label}>Topic</Text>
         <View style={styles.chips}>
           {CATEGORIES.map((c) => (
             <Pressable
@@ -101,8 +101,8 @@ export default function ComposeScreen() {
           <View style={{ flex: 1 }}>
             <Text style={styles.label}>Message in a bottle</Text>
             <Text style={styles.hint}>
-              Si está activo, quien lo reciba lo retransmitirá. Si no, es un envío directo
-              phone a phone, sin repetición.
+              When on, whoever receives it will rebroadcast it. When off, it is a direct
+              phone-to-phone send with no relay.
             </Text>
           </View>
           <Switch
@@ -113,7 +113,7 @@ export default function ComposeScreen() {
           />
         </View>
 
-        <Text style={styles.label}>Caducidad</Text>
+        <Text style={styles.label}>Expiry</Text>
         <View style={styles.chips}>
           {EXPIRY_PRESETS.map((p) => (
             <Pressable
@@ -129,7 +129,7 @@ export default function ComposeScreen() {
           onPress={submit}
           disabled={busy || !text.trim()}
           style={[styles.cta, (!text.trim() || busy) && styles.ctaOff]}>
-          <Text style={styles.ctaText}>{bottleMode ? 'Lanzar botella' : 'Dejar mensaje directo'}</Text>
+          <Text style={styles.ctaText}>{bottleMode ? 'Launch bottle' : 'Leave a direct message'}</Text>
         </Pressable>
       </ScrollView>
     </KeyboardAvoidingView>

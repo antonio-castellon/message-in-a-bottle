@@ -22,13 +22,13 @@ export function MessageCard({
       </View>
       <Text style={styles.body}>{message.text}</Text>
       <View style={styles.flags}>
-        {message.owned ? <Flag label="tuyo" tone="amber" /> : null}
+        {message.owned ? <Flag label="yours" tone="amber" /> : null}
         {message.bottleMode && message.bottleForwardEnabled ? (
-          <Flag label="botella" tone="accent" />
+          <Flag label="bottle" tone="accent" />
         ) : (
-          <Flag label="directo" tone="muted" />
+          <Flag label="direct" tone="muted" />
         )}
-        {!message.seen && !message.owned ? <Flag label="nuevo" tone="good" /> : null}
+        {!message.seen && !message.owned ? <Flag label="new" tone="good" /> : null}
         {expiry ? <Flag label={expiry} tone="muted" /> : null}
         <Text style={styles.id}>#{shortId(message.messageId)}</Text>
       </View>

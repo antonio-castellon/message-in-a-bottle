@@ -22,7 +22,7 @@ export default function BlockedScreen() {
   function add() {
     const value = draft.trim().toLowerCase();
     if (!isUuid(value)) {
-      Alert.alert('UUID inválido', 'Pega un UUID v4 de móvil o de mensaje.');
+      Alert.alert('Invalid UUID', 'Paste a v4 UUID for a phone or a message.');
       return;
     }
     void blockUuid(value, kind, 'manual');
@@ -32,20 +32,20 @@ export default function BlockedScreen() {
   return (
     <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
       <Text style={styles.lead}>
-        Un UUID de móvil bloqueado no se acepta ni se contacta por GATT. Un UUID de mensaje
-        se descarta aunque llegue desde otro origen.
+        A blocked phone UUID is not accepted and is never contacted over GATT. A blocked
+        message UUID is dropped even if it arrives from another origin.
       </Text>
 
       <View style={styles.kinds}>
         <Pressable
           onPress={() => setKind('device')}
           style={[styles.kind, kind === 'device' && styles.kindOn]}>
-          <Text style={styles.kindText}>Móvil de origen</Text>
+          <Text style={styles.kindText}>Origin phone</Text>
         </Pressable>
         <Pressable
           onPress={() => setKind('message')}
           style={[styles.kind, kind === 'message' && styles.kindOn]}>
-          <Text style={styles.kindText}>Mensaje</Text>
+          <Text style={styles.kindText}>Message</Text>
         </Pressable>
       </View>
 
@@ -59,16 +59,16 @@ export default function BlockedScreen() {
         style={styles.input}
       />
       <Pressable onPress={add} style={styles.cta}>
-        <Text style={styles.ctaText}>Añadir a la lista</Text>
+        <Text style={styles.ctaText}>Add to the list</Text>
       </Pressable>
 
       {blocked.length === 0 ? (
-        <Text style={styles.empty}>La lista está vacía.</Text>
+        <Text style={styles.empty}>The list is empty.</Text>
       ) : (
         blocked.map((entry) => (
           <View key={entry.uuid} style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.kindBadge}>{entry.kind === 'device' ? 'móvil' : 'mensaje'}</Text>
+              <Text style={styles.kindBadge}>{entry.kind === 'device' ? 'phone' : 'message'}</Text>
               <Text selectable style={styles.uuid}>
                 {entry.uuid}
               </Text>
@@ -77,7 +77,7 @@ export default function BlockedScreen() {
               </Text>
             </View>
             <Pressable onPress={() => void unblockUuid(entry.uuid)} style={styles.unblock}>
-              <Text style={styles.unblockText}>Quitar</Text>
+              <Text style={styles.unblockText}>Remove</Text>
             </Pressable>
           </View>
         ))

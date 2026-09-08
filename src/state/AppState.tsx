@@ -179,7 +179,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
         bottleForwardEnabled: input.bottleMode,
         seen: true,
       };
-      if (!msg.text) throw new Error('El mensaje está vacío.');
+      if (!msg.text) throw new Error('The message is empty.');
       await persistMessages([msg, ...messagesRef.current]);
       return msg;
     },
@@ -357,6 +357,6 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
 
 export function useApp(): AppContextValue {
   const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useApp fuera de AppProvider');
+  if (!ctx) throw new Error('useApp used outside AppProvider');
   return ctx;
 }

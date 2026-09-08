@@ -6,11 +6,11 @@ import { colors, space } from '@/src/theme';
 export default function NotFoundScreen() {
   return (
     <>
-      <Stack.Screen options={{ title: 'Naufrago' }} />
+      <Stack.Screen options={{ title: 'Adrift' }} />
       <View style={styles.container}>
-        <Text style={styles.title}>Esta orilla no existe.</Text>
+        <Text style={styles.title}>This shore does not exist.</Text>
         <Link href="/" style={styles.link}>
-          <Text style={styles.linkText}>Volver a Recibidos</Text>
+          <Text style={styles.linkText}>Back to Inbox</Text>
         </Link>
       </View>
     </>

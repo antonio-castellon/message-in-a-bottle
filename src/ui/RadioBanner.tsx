@@ -4,12 +4,12 @@ import { useApp } from '../state/AppState';
 import { colors, space } from '../theme';
 
 const STATUS_LABEL: Record<string, string> = {
-  off: 'Radio apagada',
-  starting: 'Arrancando GATT…',
-  on: 'Al aire · GATT',
-  syncing: 'Sincronizando…',
-  error: 'Error de radio',
-  unsupported: 'Bluetooth no disponible',
+  off: 'Radio off',
+  starting: 'Starting GATT…',
+  on: 'On air · GATT',
+  syncing: 'Syncing…',
+  error: 'Radio error',
+  unsupported: 'Bluetooth unavailable',
 };
 
 export function RadioBanner() {
@@ -23,7 +23,7 @@ export function RadioBanner() {
         <Text style={styles.sub}>
           {statusDetail
             ? statusDetail
-            : `${nearby} cerca · cola ${queueSize} · cada ${settings.intervalSeconds}s`}
+            : `${nearby} nearby · queue ${queueSize} · every ${settings.intervalSeconds}s`}
           {syncingWith ? ` · ${syncingWith.slice(0, 6)}…` : ''}
         </Text>
       </View>

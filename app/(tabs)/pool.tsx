@@ -23,16 +23,16 @@ export default function PoolScreen() {
           <View style={styles.header}>
             <RadioBanner />
             <Text style={styles.lead}>
-              Lo que este móvil está dispuesto a transmitir. {own} propios · {bottled} de
-              botella ajenos. Un mensaje directo no se reenvía; una botella sí, hasta que
-              caduque o la saques del pool.
+              What this phone is willing to transmit. {own} yours · {bottled} bottled from
+              others. A direct message is not forwarded; a bottle is, until it expires or you
+              pull it from the pool.
             </Text>
           </View>
         }
         ListEmptyComponent={
           <EmptyState
-            title="La botella está vacía"
-            body="Escribe un mensaje o espera a que alguien te lance una botella para reenviarla."
+            title="The bottle is empty"
+            body="Write a message, or wait for someone to toss you a bottle to forward."
           />
         }
         renderItem={({ item }) => (

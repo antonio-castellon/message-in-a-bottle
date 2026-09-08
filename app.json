@@ -11,8 +11,8 @@
       "supportsTablet": true,
       "bundleIdentifier": "dev.personal.messageinabottle",
       "infoPlist": {
-        "NSBluetoothAlwaysUsageDescription": "Message in a Bottle usa Bluetooth GATT para intercambiar mensajes de texto con móviles cercanos, sin internet.",
-        "NSBluetoothPeripheralUsageDescription": "Message in a Bottle se anuncia como periférico BLE para que otros móviles recojan y dejen mensajes."
+        "NSBluetoothAlwaysUsageDescription": "Message in a Bottle uses Bluetooth GATT to exchange text messages with nearby phones, with no internet.",
+        "NSBluetoothPeripheralUsageDescription": "Message in a Bottle advertises as a BLE peripheral so nearby phones can pick up and leave messages."
       }
     },
     "android": {
@@ -57,8 +57,8 @@
           "androidBluetoothPermissions": ["scan", "connect", "advertise"],
           "bluetoothBackground": true,
           "multipeerServiceTypes": false,
-          "bluetoothAlwaysUsageDescription": "Message in a Bottle usa Bluetooth GATT para intercambiar mensajes de texto con móviles cercanos, sin internet.",
-          "bluetoothPeripheralUsageDescription": "Message in a Bottle se anuncia como periférico BLE para que otros móviles recojan y dejen mensajes."
+          "bluetoothAlwaysUsageDescription": "Message in a Bottle uses Bluetooth GATT to exchange text messages with nearby phones, with no internet.",
+          "bluetoothPeripheralUsageDescription": "Message in a Bottle advertises as a BLE peripheral so nearby phones can pick up and leave messages."
         }
       ]
     ],

@@ -75,7 +75,7 @@ class RadioEngine {
 
   async start(): Promise<void> {
     if (Platform.OS === 'web') {
-      this.host?.onStatus('unsupported', 'Bluetooth GATT no está disponible en web.');
+      this.host?.onStatus('unsupported', 'Bluetooth GATT is not available on web.');
       return;
     }
     if (this.running) return;
@@ -92,13 +92,13 @@ class RadioEngine {
       const granted = await requestBluetoothPermission(['scan', 'connect', 'advertise']);
       if (!granted) {
         this.running = false;
-        this.host?.onStatus('error', 'Permisos de Bluetooth denegados.');
+        this.host?.onStatus('error', 'Bluetooth permission denied.');
         return;
       }
       const enabled = await isBluetoothEnabled();
       if (!enabled) {
         this.running = false;
-        this.host?.onStatus('error', 'Activa Bluetooth para transmitir.');
+        this.host?.onStatus('error', 'Turn on Bluetooth to transmit.');
         return;
       }
 
@@ -141,13 +141,13 @@ class RadioEngine {
         scanMode: 'balanced',
       });
       this.host?.onStatus('on');
-      this.log('info', 'Radio GATT activa: anunciando y escuchando.');
+      this.log('info', 'GATT radio on: advertising and scanning.');
       this.schedulePump(500);
     } catch (error) {
       this.running = false;
       const message = error instanceof Error ? error.message : String(error);
       this.host?.onStatus('error', message);
-      this.log('error', `No se pudo arrancar la radio: ${message}`);
+      this.log('error', `Could not start the radio: ${message}`);
     }
   }
 
@@ -173,7 +173,7 @@ class RadioEngine {
     this.syncingWith = null;
     this.host?.onStatus('off');
     this.emitPeers();
-    this.log('info', 'Radio detenida.');
+    this.log('info', 'Radio stopped.');
   }
 
   async refreshIdentity(deviceId: string): Promise<void> {
@@ -185,7 +185,7 @@ class RadioEngine {
         false,
       );
     } catch (error) {
-      this.log('warn', `No se pudo publicar la nueva identidad: ${String(error)}`);
+      this.log('warn', `Could not publish the new identity: ${String(error)}`);
     }
   }
 
@@ -199,10 +199,10 @@ class RadioEngine {
         this.onDeviceFound(device);
       }),
       addEventListener('advertisingStartFailed', (event) => {
-        this.log('error', `Advertising falló: ${event.message ?? event.error ?? 'desconocido'}`);
+        this.log('error', `Advertising failed: ${event.message ?? event.error ?? 'unknown'}`);
       }),
       addEventListener('scanFailed', (event) => {
-        this.log('error', `Scan falló: ${event.message}`);
+        this.log('error', `Scan failed: ${event.message}`);
       }),
       addEventListener('peripheralWriteRequest', (event) => {
         if (normalizeUuid(event.characteristicUUID) !== MIAB_RX) return;
@@ -269,7 +269,7 @@ class RadioEngine {
         }
       }
     } catch (error) {
-      this.log('error', `Cola: ${error instanceof Error ? error.message : String(error)}`);
+      this.log('error', `Queue: ${error instanceof Error ? error.message : String(error)}`);
     }
     this.schedulePump(interval);
   }
@@ -311,7 +311,7 @@ class RadioEngine {
     return new Promise((resolve, reject) => {
       const timer = setTimeout(() => {
         this.outboundWaiters.delete(deviceId);
-        reject(new Error('tiempo de espera GATT agotado'));
+        reject(new Error('GATT wait timed out'));
       }, timeoutMs);
       this.outboundWaiters.set(deviceId, {
         assembler: new ChunkAssembler(),
@@ -331,7 +331,7 @@ class RadioEngine {
     this.syncingWith = peripheralId;
     this.host.onStatus('syncing');
     this.emitPeers();
-    this.log('info', `Conectando con ${peripheralId.slice(0, 8)}…`);
+    this.log('info', `Connecting to ${peripheralId.slice(0, 8)}…`);
     try {
       await connect(peripheralId);
       try {
@@ -345,12 +345,12 @@ class RadioEngine {
       this.knownDeviceIds.set(peripheralId, peerDeviceId);
 
       if (peerDeviceId === this.host.getSettings().deviceId.toLowerCase()) {
-        this.log('info', 'Ignorado: somos nosotros.');
+        this.log('info', 'Ignored: that is us.');
         this.markCooldown(peripheralId, peerDeviceId);
         return;
       }
       if (isDeviceBlocked(this.host.getBlocked(), peerDeviceId)) {
-        this.log('warn', `Bloqueado: ${peerDeviceId.slice(0, 8)}`);
+        this.log('warn', `Blocked: ${peerDeviceId.slice(0, 8)}`);
         this.markCooldown(peripheralId, peerDeviceId);
         return;
       }
@@ -365,12 +365,12 @@ class RadioEngine {
       });
       const offer = await pending;
       if (offer.t === 'reject') {
-        this.log('warn', `Peer rechazó: ${offer.reason}`);
+        this.log('warn', `Peer rejected: ${offer.reason}`);
         this.markCooldown(peripheralId, peerDeviceId);
         return;
       }
       if (offer.t !== 'offer') {
-        throw new Error(`respuesta inesperada: ${offer.t}`);
+        throw new Error(`unexpected reply: ${offer.t}`);
       }
       this.host.ingest(offer.messages, offer.deviceId);
       const toPush = messagesPeerNeeds(this.host.offerFor(offer.have ?? []), offer.have ?? []);
@@ -379,7 +379,7 @@ class RadioEngine {
       try {
         const done = await doneWait;
         if (done.t !== 'done' && done.t !== 'reject') {
-          this.log('warn', `Cierre inesperado: ${done.t}`);
+          this.log('warn', `Unexpected close: ${done.t}`);
         }
       } catch {
         /* some peers ACK only via disconnect */
@@ -390,7 +390,7 @@ class RadioEngine {
         peer.lastError = null;
       }
       this.markCooldown(peripheralId, peerDeviceId);
-      this.log('info', `Sincronizado con ${peerDeviceId.slice(0, 8)}.`);
+      this.log('info', `Synced with ${peerDeviceId.slice(0, 8)}.`);
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       const peer = this.peers.get(peripheralId);
@@ -477,7 +477,7 @@ class RadioEngine {
       await this.notifyFrames({ v: 1, t: 'done' });
       this.markCooldown(centralId, from);
       this.inboundBusyUntil = Date.now() + 1500;
-      this.log('info', `Recibida botella de ${from.slice(0, 8)}.`);
+      this.log('info', `Bottle received from ${from.slice(0, 8)}.`);
     }
   }
 

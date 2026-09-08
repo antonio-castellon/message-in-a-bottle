@@ -21,7 +21,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Recibidos',
+          title: 'Inbox',
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'tray.and.arrow.down', android: 'inbox', web: 'inbox' }}
@@ -34,7 +34,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="pool"
         options={{
-          title: 'Botella',
+          title: 'Bottle',
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{
@@ -51,7 +51,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="compose"
         options={{
-          title: 'Escribir',
+          title: 'Write',
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'square.and.pencil', android: 'edit', web: 'edit' }}
@@ -64,7 +64,7 @@ export default function TabLayout() {
       <Tabs.Screen
         name="settings"
         options={{
-          title: 'Ajustes',
+          title: 'Settings',
           tabBarIcon: ({ color }) => (
             <SymbolView
               name={{ ios: 'gearshape', android: 'settings', web: 'settings' }}

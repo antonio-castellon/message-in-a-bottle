@@ -54,8 +54,8 @@ function RootNav() {
           contentStyle: { backgroundColor: colors.bg },
         }}>
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="message/[id]" options={{ title: 'Mensaje' }} />
-        <Stack.Screen name="blocked" options={{ title: 'Lista de bloqueo' }} />
+        <Stack.Screen name="message/[id]" options={{ title: 'Message' }} />
+        <Stack.Screen name="blocked" options={{ title: 'Block list' }} />
       </Stack>
     </ThemeProvider>
   );

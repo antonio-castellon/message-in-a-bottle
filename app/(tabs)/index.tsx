@@ -13,9 +13,9 @@ import { RadioBanner } from '@/src/ui/RadioBanner';
 export default function InboxScreen() {
   const { inbox } = useApp();
   const router = useRouter();
-  const [filter, setFilter] = useState<Category | 'todas'>('todas');
+  const [filter, setFilter] = useState<Category | 'all'>('all');
   const data = useMemo(
-    () => (filter === 'todas' ? inbox : inbox.filter((m) => m.category === filter)),
+    () => (filter === 'all' ? inbox : inbox.filter((m) => m.category === filter)),
     [inbox, filter],
   );
 
@@ -29,11 +29,11 @@ export default function InboxScreen() {
           <View style={styles.header}>
             <RadioBanner />
             <Text style={styles.lead}>
-              Mensajes que llegaron phone a phone. Los directos se quedan aquí. Las botellas
-              también entran al pool de reenvío, salvo que las silencies.
+              Messages that arrived phone to phone. Direct ones stay here. Bottles also enter
+              the forwarding pool unless you silence them.
             </Text>
             <View style={styles.chips}>
-              <Chip label="Todas" active={filter === 'todas'} onPress={() => setFilter('todas')} />
+              <Chip label="All" active={filter === 'all'} onPress={() => setFilter('all')} />
               {CATEGORIES.map((c) => (
                 <Chip
                   key={c}
@@ -47,8 +47,8 @@ export default function InboxScreen() {
         }
         ListEmptyComponent={
           <EmptyState
-            title="Mar en calma"
-            body="Cuando otro móvil cercano lance un mensaje, aparecerá aquí. Sin internet, sin servidor."
+            title="Calm sea"
+            body="When a nearby phone sends a message, it will show up here. No internet, no server."
           />
         }
         renderItem={({ item }) => (

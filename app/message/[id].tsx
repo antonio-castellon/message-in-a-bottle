@@ -28,7 +28,7 @@ export default function MessageDetailScreen() {
   if (!message) {
     return (
       <View style={styles.screen}>
-        <Text style={styles.missing}>Este mensaje ya no está en el teléfono.</Text>
+        <Text style={styles.missing}>This message is no longer on the phone.</Text>
       </View>
     );
   }
@@ -38,10 +38,10 @@ export default function MessageDetailScreen() {
   const canForward = !item.owned && item.bottleMode && settings.acceptBottleMode && !expired;
 
   function confirmDelete() {
-    Alert.alert('Eliminar mensaje', 'Desaparece de la bandeja y del pool de este móvil.', [
-      { text: 'Cancelar', style: 'cancel' },
+    Alert.alert('Delete message', 'It will leave the inbox and the pool on this phone.', [
+      { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Eliminar',
+        text: 'Delete',
         style: 'destructive',
         onPress: () => {
           void removeMessage(item.messageId).then(() => router.back());
@@ -52,15 +52,15 @@ export default function MessageDetailScreen() {
 
   function confirmBlockOrigin() {
     Alert.alert(
-      'Bloquear origen',
-      `No se aceptarán más mensajes del UUID ${item.originDeviceId}.`,
+      'Block origin',
+      `No more messages will be accepted from UUID ${item.originDeviceId}.`,
       [
-        { text: 'Cancelar', style: 'cancel' },
+        { text: 'Cancel', style: 'cancel' },
         {
-          text: 'Bloquear',
+          text: 'Block',
           style: 'destructive',
           onPress: () => {
-            void blockUuid(item.originDeviceId, 'device', 'origen de mensaje').then(() =>
+            void blockUuid(item.originDeviceId, 'device', 'message origin').then(() =>
               router.back(),
             );
           },
@@ -75,28 +75,28 @@ export default function MessageDetailScreen() {
       <Text style={styles.body}>{item.text}</Text>
 
       <View style={styles.card}>
-        <Line label="Mensaje" value={item.messageId} />
-        <Line label="Origen" value={item.originDeviceId} />
+        <Line label="Message" value={item.messageId} />
+        <Line label="Origin" value={item.originDeviceId} />
         <Line
-          label="Recibido de"
-          value={item.receivedFromDeviceId ?? (item.owned ? 'este móvil' : '—')}
+          label="Received from"
+          value={item.receivedFromDeviceId ?? (item.owned ? 'this phone' : '—')}
         />
-        <Line label="Creado" value={relativeTime(item.createdAt)} />
-        <Line label="Recibido" value={relativeTime(item.receivedAt)} />
-        <Line label="Saltos" value={String(item.hopCount)} />
-        <Line label="Modo original" value={item.bottleMode ? 'botella' : 'directo'} />
-        <Line label="Caducidad" value={expiryLabel(item.expiresAt) ?? 'sin caducidad'} />
+        <Line label="Created" value={relativeTime(item.createdAt)} />
+        <Line label="Received" value={relativeTime(item.receivedAt)} />
+        <Line label="Hops" value={String(item.hopCount)} />
+        <Line label="Original mode" value={item.bottleMode ? 'bottle' : 'direct'} />
+        <Line label="Expiry" value={expiryLabel(item.expiresAt) ?? 'no expiry'} />
       </View>
 
       {!item.owned ? (
         <View style={styles.card}>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>Reenviar como botella</Text>
+              <Text style={styles.rowTitle}>Forward as a bottle</Text>
               <Text style={styles.hint}>
                 {canForward
-                  ? 'Este mensaje entra en tu pool y se transmitirá a otros móviles.'
-                  : 'No se puede reenviar: o no era botella, o desactivaste el modo, o ya caducó.'}
+                  ? 'This message enters your pool and will be transmitted to other phones.'
+                  : 'Cannot forward: it was not a bottle, you turned the mode off, or it expired.'}
               </Text>
             </View>
             <Switch
@@ -112,8 +112,8 @@ export default function MessageDetailScreen() {
         <View style={styles.card}>
           <View style={styles.row}>
             <View style={{ flex: 1 }}>
-              <Text style={styles.rowTitle}>Incluir en el pool</Text>
-              <Text style={styles.hint}>Si lo quitas, este móvil deja de transmitirlo.</Text>
+              <Text style={styles.rowTitle}>Include in the pool</Text>
+              <Text style={styles.hint}>If you remove it, this phone stops transmitting it.</Text>
             </View>
             <Switch
               value={item.inBroadcastPool}
@@ -126,7 +126,7 @@ export default function MessageDetailScreen() {
             <View style={{ flex: 1 }}>
               <Text style={styles.rowTitle}>Message in a bottle</Text>
               <Text style={styles.hint}>
-                Quien lo reciba lo incorporará a su pool. Desactívalo para un envío directo.
+                Whoever receives it will add it to their pool. Turn this off for a direct send.
               </Text>
             </View>
             <Switch
@@ -140,11 +140,11 @@ export default function MessageDetailScreen() {
       )}
 
       <Pressable onPress={confirmDelete} style={styles.danger}>
-        <Text style={styles.dangerText}>Eliminar de este móvil</Text>
+        <Text style={styles.dangerText}>Delete from this phone</Text>
       </Pressable>
       {!item.owned ? (
         <Pressable onPress={confirmBlockOrigin} style={styles.ghost}>
-          <Text style={styles.ghostText}>Bloquear origen {shortId(item.originDeviceId)}</Text>
+          <Text style={styles.ghostText}>Block origin {shortId(item.originDeviceId)}</Text>
         </Pressable>
       ) : null}
     </ScrollView>
