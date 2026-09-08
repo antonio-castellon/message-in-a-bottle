@@ -4,7 +4,7 @@ from pathlib import Path
 from PIL import Image, ImageDraw, ImageFilter, ImageOps
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "docs" / "images" / "bottle-icon.jpg"
+SRC = ROOT / "docs" / "images" / "app-icon.jpg"
 
 OUT = ROOT / "assets" / "images"
 OUT.mkdir(parents=True, exist_ok=True)
@@ -24,16 +24,11 @@ def main() -> None:
     icon.save(OUT / "icon.png", "PNG", optimize=True)
     icon.save(DOCS / "icon.png", "PNG", optimize=True)
 
-    # Adaptive background: water crop from lower-right (more sea, less bottle)
-    bg = ImageOps.fit(src.crop((src.width // 5, src.height // 4, src.width, src.height)), (1024, 1024), Image.Resampling.LANCZOS)
-    bg = bg.filter(ImageFilter.GaussianBlur(8))
-    bg.save(OUT / "android-icon-background.png", "PNG", optimize=True)
+    navy = src.getpixel((8, 8))
+    Image.new("RGB", (1024, 1024), navy).save(OUT / "android-icon-background.png", "PNG")
 
-    # Adaptive foreground: bottle with transparent padding (safe zone)
-    fg_sq = cover(src, 720)
-    canvas = Image.new("RGBA", (1024, 1024), (7, 16, 24, 0))
-    canvas.paste(fg_sq, ((1024 - 720) // 2, (1024 - 720) // 2))
-    canvas.save(OUT / "android-icon-foreground.png", "PNG", optimize=True)
+    # Adaptive foreground: full graphic (already has navy field)
+    cover(src, 1024).save(OUT / "android-icon-foreground.png", "PNG", optimize=True)
 
     # Monochrome: high-contrast bottle silhouette
     gray = ImageOps.grayscale(cover(src, 1024))
