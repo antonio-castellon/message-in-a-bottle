@@ -85,6 +85,16 @@ $env:JAVA_HOME = "C:\Program Files\Eclipse Adoptium\jdk-17.0.19.10-hotspot"
 $env:ANDROID_HOME = "C:\Users\Antonio\Android\Sdk"
 ```
 
+## Beta releases (GitHub Actions)
+
+A GitHub Actions pipeline builds a **sideloadable Android APK** and publishes it as a **prerelease** on GitHub.
+
+- Workflow: `.github/workflows/beta-release.yml`
+- Trigger: **Actions → Beta release → Run workflow**, or push a tag like `v1.0.0-beta.1`
+- Output: [Releases](https://github.com/antonio-castellon/message-in-a-bottle/releases) with `Message-in-a-Bottle-v….apk`
+
+The APK is signed with the debug keystore (fine for beta testers, not for Play Store). iOS is not produced by this pipeline: a signed IPA needs an Apple Developer account.
+
 ## Getting started
 
 ```powershell

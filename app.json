@@ -2,7 +2,7 @@
   "expo": {
     "name": "Message in a Bottle",
     "slug": "message-in-a-bottle",
-    "version": "1.0.0",
+    "version": "1.0.0-beta.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "messageinabottle",
@@ -10,6 +10,7 @@
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "dev.personal.messageinabottle",
+      "buildNumber": "1",
       "infoPlist": {
         "NSBluetoothAlwaysUsageDescription": "Message in a Bottle uses Bluetooth GATT to exchange text messages with nearby phones, with no internet.",
         "NSBluetoothPeripheralUsageDescription": "Message in a Bottle advertises as a BLE peripheral so nearby phones can pick up and leave messages."
@@ -17,6 +18,7 @@
     },
     "android": {
       "package": "dev.personal.messageinabottle",
+      "versionCode": 1,
       "adaptiveIcon": {
         "backgroundColor": "#071018",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
