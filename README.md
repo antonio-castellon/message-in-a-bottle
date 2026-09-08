@@ -49,6 +49,16 @@ Incoming GATT messages are filtered **on the receiver**:
 
 Both filters are in Settings. The same filters are sent in the GATT handshake so peers do not waste airtime on content you would discard.
 
+## UUID whitelist and QR share
+
+By default the radio is open to any nearby phone (except the block list). You can turn on a **UUID whitelist** so this phone only syncs with listed origins.
+
+- **Show my QR** — encodes this phone’s UUID (`miab:1:device:<uuid>`).
+- **Scan a QR** — the other person scans it and their app adds you to **their** whitelist (or you scan theirs to add them to yours).
+- You can also paste a UUID by hand.
+
+The block list still wins: a blocked UUID is never contacted, even if it is on the whitelist.
+
 ## Loop prevention and anonymity
 
 - A message already known (same `messageId`) is ignored.
@@ -77,7 +87,7 @@ Session: `hello` (ID catalog) → `offer` (messages you are missing + the peer c
 - **Inbox** — messages that arrived
 - **Bottle** — pool this phone transmits (your own + bottled messages from others)
 - **Write** — compose a message, bottle/direct mode, expiry
-- **Settings** — app language, languages to receive, topics to receive, radio, interval, accept bottles, regenerate UUID, block list, nearby queue
+- **Settings** — app language, languages to receive, topics to receive, UUID whitelist and QR share, radio, interval, accept bottles, regenerate UUID, block list, nearby queue
 
 On someone else’s message you can stop forwarding it or delete it. On your own you can pull it from the pool or switch it to direct.
 

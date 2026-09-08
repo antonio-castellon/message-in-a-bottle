@@ -21,6 +21,7 @@ import type {
   RadioLogEntry,
   RadioStatus,
   Settings,
+  WhitelistEntry,
 } from '../domain/types';
 import { MAX_TEXT_LENGTH } from '../domain/types';
 import {
@@ -29,6 +30,7 @@ import {
   saveLog,
   saveMessages,
   saveSettings,
+  saveWhitelist,
 } from '../storage/store';
 
 interface ComposeInput {
@@ -44,6 +46,7 @@ interface AppContextValue {
   settings: Settings;
   messages: LocalMessage[];
   blocked: BlockedEntry[];
+  whitelist: WhitelistEntry[];
   status: RadioStatus;
   statusDetail: string | null;
   peers: NearbyPeer[];
@@ -59,6 +62,8 @@ interface AppContextValue {
   markSeen: (messageId: string) => Promise<void>;
   blockUuid: (uuid: string, kind: BlockedEntry['kind'], note?: string) => Promise<void>;
   unblockUuid: (uuid: string) => Promise<void>;
+  addToWhitelist: (uuid: string, note?: string) => Promise<void>;
+  removeFromWhitelist: (uuid: string) => Promise<void>;
   updateSettings: (patch: Partial<Settings>) => Promise<void>;
   regenerateDeviceId: () => Promise<string>;
   toggleRadio: (on: boolean) => Promise<void>;
@@ -72,6 +77,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const [settings, setSettings] = useState<Settings | null>(null);
   const [messages, setMessages] = useState<LocalMessage[]>([]);
   const [blocked, setBlocked] = useState<BlockedEntry[]>([]);
+  const [whitelist, setWhitelist] = useState<WhitelistEntry[]>([]);
   const [status, setStatus] = useState<RadioStatus>('off');
   const [statusDetail, setStatusDetail] = useState<string | null>(null);
   const [peers, setPeers] = useState<NearbyPeer[]>([]);
@@ -82,9 +88,11 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
   const settingsRef = useRef(settings);
   const messagesRef = useRef(messages);
   const blockedRef = useRef(blocked);
+  const whitelistRef = useRef(whitelist);
   settingsRef.current = settings;
   messagesRef.current = messages;
   blockedRef.current = blocked;
+  whitelistRef.current = whitelist;
 
   const persistMessages = useCallback(async (next: LocalMessage[]) => {
     setMessages(next);
@@ -100,10 +108,12 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       setSettings(loaded.settings);
       setMessages(loaded.messages);
       setBlocked(loaded.blocked);
+      setWhitelist(loaded.whitelist);
       setLog(loaded.log);
       settingsRef.current = loaded.settings;
       messagesRef.current = loaded.messages;
       blockedRef.current = loaded.blocked;
+      whitelistRef.current = loaded.whitelist;
       setReady(true);
     })();
     return () => {
@@ -117,6 +127,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     radio.bind({
       getSettings: () => settingsRef.current!,
       getBlocked: () => blockedRef.current,
+      getWhitelist: () => whitelistRef.current,
       catalogIds: () => messagesRef.current.slice(0, MAX_CATALOG_IDS).map((m) => m.messageId),
       getReceiveFilter: () => ({
         languages: settingsRef.current!.acceptedLanguages,
@@ -133,6 +144,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
           incoming,
           settingsRef.current!,
           blockedRef.current,
+          whitelistRef.current,
           fromDeviceId,
         );
         if (!added.length) return;
@@ -265,6 +277,25 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     await saveBlocked(next);
   }, []);
 
+  const addToWhitelist = useCallback(async (uuid: string, note?: string) => {
+    const id = uuid.trim().toLowerCase();
+    if (!id) return;
+    const next = [
+      { uuid: id, addedAt: nowIso(), note },
+      ...whitelistRef.current.filter((e) => e.uuid.toLowerCase() !== id),
+    ];
+    whitelistRef.current = next;
+    setWhitelist(next);
+    await saveWhitelist(next);
+  }, []);
+
+  const removeFromWhitelist = useCallback(async (uuid: string) => {
+    const next = whitelistRef.current.filter((e) => e.uuid.toLowerCase() !== uuid.toLowerCase());
+    whitelistRef.current = next;
+    setWhitelist(next);
+    await saveWhitelist(next);
+  }, []);
+
   const updateSettings = useCallback(async (patch: Partial<Settings>) => {
     const prev = settingsRef.current!;
     let nextPatch = patch;
@@ -330,6 +361,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       settings,
       messages,
       blocked,
+      whitelist,
       status,
       statusDetail,
       peers,
@@ -345,6 +377,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       markSeen,
       blockUuid,
       unblockUuid,
+      addToWhitelist,
+      removeFromWhitelist,
       updateSettings,
       regenerateDeviceId,
       toggleRadio,
@@ -355,6 +389,7 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     settings,
     messages,
     blocked,
+    whitelist,
     status,
     statusDetail,
     peers,
@@ -370,6 +405,8 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     markSeen,
     blockUuid,
     unblockUuid,
+    addToWhitelist,
+    removeFromWhitelist,
     updateSettings,
     regenerateDeviceId,
     toggleRadio,

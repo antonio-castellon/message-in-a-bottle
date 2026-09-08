@@ -56,6 +56,9 @@ function RootNav() {
         <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
         <Stack.Screen name="message/[id]" options={{ title: t('message.title') }} />
         <Stack.Screen name="blocked" options={{ title: t('blocked.title') }} />
+        <Stack.Screen name="whitelist" options={{ title: t('whitelist.title') }} />
+        <Stack.Screen name="share-qr" options={{ title: t('shareQr.title') }} />
+        <Stack.Screen name="scan-qr" options={{ title: t('scanQr.title') }} />
         <Stack.Screen name="languages" options={{ title: t('languages.title') }} />
         <Stack.Screen name="app-language" options={{ title: t('languages.appTitle') }} />
       </Stack>

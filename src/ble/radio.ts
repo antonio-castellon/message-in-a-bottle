@@ -20,7 +20,7 @@ import {
 } from 'munim-bluetooth';
 
 import { nowIso } from '../domain/ids';
-import { filterForPeer, isDeviceBlocked, messagesPeerNeeds } from '../domain/pool';
+import { filterForPeer, isDeviceBlocked, messagesPeerNeeds, passesWhitelist } from '../domain/pool';
 import type {
   BlockedEntry,
   BottleMessage,
@@ -29,6 +29,7 @@ import type {
   RadioLogEntry,
   RadioStatus,
   Settings,
+  WhitelistEntry,
 } from '../domain/types';
 import { bytesToHex, bytesToUtf8, ChunkAssembler, encodeChunks, hexToBytes, utf8ToBytes } from './framing';
 import { ADVERTISED_NAME, MIAB_IDENTITY, MIAB_RX, MIAB_SERVICE, MIAB_TX, normalizeUuid } from './uuids';
@@ -36,6 +37,7 @@ import { ADVERTISED_NAME, MIAB_IDENTITY, MIAB_RX, MIAB_SERVICE, MIAB_TX, normali
 export interface RadioHost {
   getSettings: () => Settings;
   getBlocked: () => BlockedEntry[];
+  getWhitelist: () => WhitelistEntry[];
   catalogIds: () => string[];
   getReceiveFilter: () => { languages: string[]; categories: string[] };
   offerFor: (have: string[]) => BottleMessage[];
@@ -355,6 +357,17 @@ class RadioEngine {
         this.markCooldown(peripheralId, peerDeviceId);
         return;
       }
+      if (
+        !passesWhitelist(
+          this.host.getSettings().whitelistEnabled,
+          this.host.getWhitelist(),
+          peerDeviceId,
+        )
+      ) {
+        this.log('warn', `Not on whitelist: ${peerDeviceId.slice(0, 8)}`);
+        this.markCooldown(peripheralId, peerDeviceId);
+        return;
+      }
 
       await subscribeToCharacteristic(peripheralId, MIAB_SERVICE, MIAB_TX);
       const pending = this.waitForPeerMessage(peripheralId, 10_000);
@@ -467,6 +480,12 @@ class RadioEngine {
       this.knownDeviceIds.set(centralId, peerId);
       if (isDeviceBlocked(this.host.getBlocked(), peerId)) {
         await this.notifyFrames({ v: 1, t: 'reject', reason: 'blocked' });
+        return;
+      }
+      if (
+        !passesWhitelist(this.host.getSettings().whitelistEnabled, this.host.getWhitelist(), peerId)
+      ) {
+        await this.notifyFrames({ v: 1, t: 'reject', reason: 'whitelist' });
         return;
       }
       const ours = this.host.getReceiveFilter();

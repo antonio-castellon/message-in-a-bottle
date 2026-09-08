@@ -23,6 +23,7 @@ export default function SettingsScreen() {
   const {
     settings,
     blocked,
+    whitelist,
     peers,
     log,
     queueSize,
@@ -81,6 +82,18 @@ export default function SettingsScreen() {
         <Text style={styles.hint}>{t('settings.identityHint')}</Text>
         <Pressable onPress={confirmRegen} style={styles.secondary}>
           <Text style={styles.secondaryText}>{t('settings.regenUuid')}</Text>
+        </Pressable>
+        <Pressable onPress={() => router.push('/share-qr')} style={styles.secondary}>
+          <Text style={styles.secondaryText}>{t('whitelist.shareQr')}</Text>
+        </Pressable>
+      </Section>
+
+      <Section title={t('settings.whitelist')}>
+        <Text style={styles.hint}>
+          {t('settings.whitelistHint', { count: whitelist.length })}
+        </Text>
+        <Pressable onPress={() => router.push('/whitelist')} style={styles.secondary}>
+          <Text style={styles.secondaryText}>{t('settings.openWhitelist')}</Text>
         </Pressable>
       </Section>
 

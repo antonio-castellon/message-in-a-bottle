@@ -5,6 +5,7 @@ import type {
   Category,
   LocalMessage,
   Settings,
+  WhitelistEntry,
 } from './types';
 
 export function isDeviceBlocked(blocked: BlockedEntry[], deviceId: string): boolean {
@@ -15,6 +16,20 @@ export function isDeviceBlocked(blocked: BlockedEntry[], deviceId: string): bool
 export function isMessageBlocked(blocked: BlockedEntry[], messageId: string): boolean {
   const id = messageId.toLowerCase();
   return blocked.some((b) => b.kind === 'message' && b.uuid.toLowerCase() === id);
+}
+
+export function isOnWhitelist(list: WhitelistEntry[], deviceId: string): boolean {
+  const id = deviceId.toLowerCase();
+  return list.some((e) => e.uuid.toLowerCase() === id);
+}
+
+export function passesWhitelist(
+  enabled: boolean,
+  list: WhitelistEntry[],
+  deviceId: string,
+): boolean {
+  if (!enabled) return true;
+  return isOnWhitelist(list, deviceId);
 }
 
 export function catalogIds(messages: LocalMessage[]): string[] {
@@ -45,6 +60,7 @@ export function ingestIncoming(
   incoming: BottleMessage[],
   settings: Settings,
   blocked: BlockedEntry[],
+  whitelist: WhitelistEntry[],
   fromDeviceId: string,
 ): { next: LocalMessage[]; added: LocalMessage[] } {
   const known = new Set(existing.map((m) => m.messageId.toLowerCase()));
@@ -58,6 +74,12 @@ export function ingestIncoming(
     if (known.has(msg.messageId)) continue;
     if (msg.originDeviceId === settings.deviceId) continue;
     if (isDeviceBlocked(blocked, msg.originDeviceId) || isDeviceBlocked(blocked, fromDeviceId)) {
+      continue;
+    }
+    if (
+      !passesWhitelist(settings.whitelistEnabled, whitelist, msg.originDeviceId) ||
+      !passesWhitelist(settings.whitelistEnabled, whitelist, fromDeviceId)
+    ) {
       continue;
     }
     if (isMessageBlocked(blocked, msg.messageId)) continue;

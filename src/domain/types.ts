@@ -66,11 +66,19 @@ export interface Settings {
   acceptedLanguages: string[];
   /** Topics admitted into the inbox. Default: all topics. */
   acceptedCategories: Category[];
+  /** When true, only phones on the UUID whitelist may sync. */
+  whitelistEnabled: boolean;
 }
 
 export interface BlockedEntry {
   uuid: string;
   kind: 'device' | 'message';
+  addedAt: string;
+  note?: string;
+}
+
+export interface WhitelistEntry {
+  uuid: string;
   addedAt: string;
   note?: string;
 }
