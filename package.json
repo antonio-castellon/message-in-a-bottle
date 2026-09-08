@@ -1,7 +1,7 @@
 {
   "name": "message-in-a-bottle",
   "main": "expo-router/entry",
-  "version": "1.0.0-beta.1",
+  "version": "1.0.0-beta.2",
   "dependencies": {
     "@react-native-async-storage/async-storage": "2.2.0",
     "expo": "~57.0.20",

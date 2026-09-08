@@ -6,7 +6,7 @@ on:
       tag:
         description: Git tag for this beta (created if missing)
         required: true
-        default: v1.0.0-beta.1
+        default: v1.0.0-beta.2
   push:
     tags:
       - "v*-beta*"
