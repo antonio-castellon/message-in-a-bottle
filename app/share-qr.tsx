@@ -1,4 +1,4 @@
-import { StyleSheet, Text, TextInput, View } from 'react-native';
+import { Alert, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import QRCode from 'react-native-qrcode-svg';
 
 import { encodeDeviceQr } from '@/src/domain/qr';
@@ -12,6 +12,23 @@ export default function ShareQrScreen() {
   return (
     <View style={styles.screen}>
       <Text style={styles.lead}>{t('shareQr.lead')}</Text>
+
+      <View style={styles.qrCard}>
+        <QRCode value={payload} size={240} backgroundColor={colors.paper} color={colors.ink} />
+      </View>
+
+      <Text style={styles.fieldLabel}>{t('shareQr.yourUuid')}</Text>
+      <Pressable
+        onPress={() => {
+          Alert.alert(t('shareQr.yourUuid'), settings.deviceId);
+        }}
+        style={styles.uuidBox}>
+        <Text selectable style={styles.uuid}>
+          {settings.deviceId}
+        </Text>
+        <Text style={styles.uuidHint}>{t('shareQr.uuidHint')}</Text>
+      </Pressable>
+
       <Text style={styles.fieldLabel}>{t('shareQr.name')}</Text>
       <Text style={styles.hint}>{t('shareQr.nameHint')}</Text>
       <TextInput
@@ -21,17 +38,6 @@ export default function ShareQrScreen() {
         placeholderTextColor={colors.muted}
         style={styles.input}
       />
-      <View style={styles.card}>
-        <QRCode
-          value={payload}
-          size={240}
-          backgroundColor={colors.paper}
-          color={colors.ink}
-        />
-      </View>
-      <Text selectable style={styles.uuid}>
-        {settings.deviceId}
-      </Text>
     </View>
   );
 }
@@ -45,6 +51,12 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   lead: { color: colors.muted, fontSize: 14, lineHeight: 20, textAlign: 'center' },
+  qrCard: {
+    backgroundColor: colors.paper,
+    padding: 20,
+    borderRadius: 20,
+    marginVertical: 8,
+  },
   fieldLabel: {
     color: colors.sand,
     fontWeight: '700',
@@ -52,6 +64,7 @@ const styles = StyleSheet.create({
     letterSpacing: 0.6,
     textTransform: 'uppercase',
     alignSelf: 'stretch',
+    marginTop: 8,
   },
   hint: { color: colors.muted, fontSize: 13, lineHeight: 18, alignSelf: 'stretch' },
   input: {
@@ -64,11 +77,15 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.line,
   },
-  card: {
-    backgroundColor: colors.paper,
-    padding: 20,
-    borderRadius: 20,
-    marginTop: 8,
+  uuidBox: {
+    alignSelf: 'stretch',
+    backgroundColor: colors.card,
+    borderRadius: 12,
+    padding: 12,
+    borderWidth: 1,
+    borderColor: colors.line,
+    gap: 4,
   },
-  uuid: { color: colors.paper, fontSize: 12, textAlign: 'center' },
+  uuid: { color: colors.paper, fontSize: 13 },
+  uuidHint: { color: colors.muted, fontSize: 12 },
 });
