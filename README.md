@@ -10,6 +10,20 @@ Android and iPhone app for sending **text messages** between nearby phones over 
   <img src="docs/images/hero.jpg" alt="A corked glass bottle with a parchment inside, drifting on moonlit water">
 </p>
 
+## Why I did this
+
+This is an experiment in **free local communication**: talking to people who are actually near you, not to someone on the other side of the world.
+
+The idea is to grow channels with a libertarian soul. If you care about control, tracking, or the footprint of current internet systems, you can still reach others — without those systems. There is no account, no cloud, no platform fee. The only cost is the battery in your pocket.
+
+That is useful in ordinary life:
+
+- Offer a service to neighbours while you walk the city or village: domestic cleaning, small labour, pet care, and so on. Anyone close enough can receive the message and decide if they are interested. You can include a phone number, an address, or whatever fits in the character limit.
+- Create events that last an hour or a lifetime: a prior exchange before a blind date in a café or a club, with less exposure than a public profile.
+- At conferences and workshops, share contacts automatically without having to stop and talk to every person.
+
+Imagination is the only real limit. More features will come (ciphered channels and ciphered messages among them). The focus is a **wild, free local environment** that each user can leave wide open or close down — that choice belongs only to them.
+
 ## Screens
 
 <p align="center">
