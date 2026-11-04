@@ -166,3 +166,7 @@ Install the same build on **two phones**, turn on Bluetooth and the radio in Set
 - iOS only advertises the name (`MIAB`) and the service UUID; payload travels over GATT, not in the advertisement.
 - Background radio is best-effort (iOS `bluetooth-central` / `bluetooth-peripheral`; Android foreground service). If the user force-quits the app, the OS will not relaunch it.
 - A sync exchanges at most 16 new messages so ATT is not flooded.
+
+## Notice and Disclaimer
+
+NOTICE AND DISCLAIMER: message-in-a-bottle does not retrieve external materials at run time; it only works with nearby phones over Bluetooth LE. This software is provided "AS IS", without warranty of any kind. The author assumes no liability for any losses, damages, liabilities or legal consequences from your use or inability to use this software. Use this software at your own risk.
