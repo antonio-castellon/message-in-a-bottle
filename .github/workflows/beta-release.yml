@@ -87,6 +87,7 @@ jobs:
           name: message-in-a-bottle-android-beta
           path: ${{ steps.apk.outputs.path }}
           if-no-files-found: error
+          retention-days: 7
 
       - name: Publish GitHub prerelease
         uses: softprops/action-gh-release@v2
