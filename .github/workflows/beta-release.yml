@@ -1,16 +1,14 @@
 name: Beta release
 
 on:
+  push:
+    tags: ['v*']
   workflow_dispatch:
     inputs:
       tag:
         description: Git tag for this beta (created if missing)
         required: true
         default: v1.0.0-beta.2
-  push:
-    tags:
-      - "v*-beta*"
-      - "v*-beta.*"
 
 permissions:
   contents: write
@@ -87,6 +85,7 @@ jobs:
           name: message-in-a-bottle-android-beta
           path: ${{ steps.apk.outputs.path }}
           if-no-files-found: error
+          retention-days: 7
 
       - name: Publish GitHub prerelease
         uses: softprops/action-gh-release@v2
